@@ -1,0 +1,102 @@
+client向server数据格式 roomnumber代表房间号
+join roomnumber
+
+build roomnumber     //向用户发送你是房主后才要求一个build包指定房间类型 换行一定要标准的\n
+xx xx xx xx xx xx xx     //共几个玩家 几个狼 几个预言家 几个女巫 几个守卫 几个猎人 几个警长（0/1）行尾最好多一个空格
+
+leave roomnumber
+
+up roomnumber
+
+down roomnumber
+
+start roomnumber
+
+worldchat    //gamestart之后不允许世界频道，建立room后仍然可以
+xxxxxxxxx@username//爱说啥说啥,按格式带上自己的用户名
+
+roomchat roomnumber //这部分我会带着报头原样转发给各个能看到的user，世界频道和房间频道的显示以及说话人ID的显示请client做
+xxxxxxxx@username    //RoomHandler做了广播，但也会转发给Game  
+//
+wolfchat roomnumber //夜晚狼人频道
+xxxxxxxxx@username 
+
+vote roomnumber
+@username //投/指定的那个人的username username中不允许带换行符,若@后\n前没有东西表示弃票
+
+/*这三个功能都用vote实现，知道这个意思就行
+carry roomnumber
+@username //猎人死带走人，格式同上
+
+trans roomnumber //警长死转交警徽 请客户端检查转交的人必须活着，username空表示撕掉警徽
+@username
+
+guard roomnumber //决定守护谁，格式同上
+@username
+*/
+
+To client 格式
+向用户发的包的格式
+//开始前
+Status    //每次收到Status包刷新一次页面
+xx xx xx xx  //设置
+user1 0/1 //用户与是否举手，不足，需client自己补全
+user2 0/1
+
+Success //成功加入/退出
+
+Owner
+
+OwnerNew
+
+Full //房间满了
+
+StartButton 0/1 //给房主
+
+Gamestarted //游戏开始辣！
+
+Status
+username 角色 1/0 1/0 //自己的 用户名 角色 活着/死了 警长/非警长
+username 1/0 1/0 //用户名 活着/死了 警长/非警长
+...
+
+Set
+0/1 0/1 channel //能否投票，能否说话，什么频道（Room/Wolf)
+
+Boom //可以自爆了
+
+Boomend //不能自爆了
+
+Died @username //告诉女巫谁死了，如果@后到\n前没有东西表示没人死
+
+Good/Bad //告诉预言家验的人身份怎样
+
+Voteforcaptain//票队长
+
+Votefordead//票死人 白天投票or晚上狼人投
+
+Votefordefend //决定守谁
+
+Day x//第几个白天 从0开始
+
+Night x//第几个黑夜，从0开始
+
+Youdie //你死了 
+
+Tellsth //讲点遗言 没这句不要讲遗言
+
+GameEnded
+
+YouWin/YouLose
+
+EndStatus
+username role 1/0 1/0 //把所有人以及身份都说出来
+
+
+角色代号
+werewolf
+villager
+prophet
+witch
+hunter
+defender
