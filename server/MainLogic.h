@@ -9,6 +9,10 @@ Qstring IntToStr(int x){
     ss<<x;
     return ss.str();
 }
+Qstring nameform(Qstring x){
+    if(x[0]=='@')return x;
+    return Qstring("@")+x+Qstring("\n");
+}
 class EventHandler{
     protected:
         ServerNetworkInterface* networkInterface;
@@ -66,20 +70,21 @@ class Player{
 class Gamestatus{
     private:
         vector<int>setting;
-        map<Qstring,bool>alive;
         map<Qstring,bool>cap;
-        map<Qstring,Qstring>role;
-        map<Qstring,vector<Player*>>roleplayer;
+        Game* game;
     public:
         vector<Qstring>playerid;
+        map<Qstring,bool>alive,used1,used2;
         map<Qstring,Player*>player;
-        Gamestatus(vector<Qstring>,vector<int>);
+        map<Qstring,vector<Player*>>roleplayer;
+        map<Qstring,Qstring>role;
+        Gamestatus(vector<Qstring>,vector<int>,Game*);
         Qstring showonestatus(Qstring);
         Qstring showalivestatus();
         Qstring showallstatus();
         bool canbroad(Qstring,Qstring,bool=0);
         int judgeend();
-        int die(Qstring);
+        int die(Qstring,bool,int);
         void changecap(Qstring);
         Qstring vote(vector<Player*>);
 };
@@ -91,20 +96,27 @@ class Game:public EventHandler{
         Gamestatus* status;
         vector<Qstring>users;
         vector<Player*>waitVote,waitMessage,waitSpecial;
+        vector<Qstring>deadbuffer;
+        map<Qstring,bool>poied;
     private:
         virtual bool canHandle(Qstring);
         virtual EventHandler* selectHandler(Qstring);
         virtual void handle(Qstring,Qstring);
         bool judgewait();
-        void set(Qstring,bool,bool,Qstring channel=Qstring("Room"));
+        void set(Qstring,bool,bool,Qstring channel=Qstring("Room"));//vote say
         void report(Qstring);
         void reportall(Qstring);
         void startAwaitsession(int);
         void broadcast(Qstring,Qstring,bool=0);
+        void closeall();
+        int deadclear(vector<Qstring>,bool);
         int dayround(int);
         int nightround(int);
+        Qstring Game::allvote(Qstring,int);
     public:
         Game(vector<Qstring>,vector<int>,ServerNetworkInterface*,EventHandler*);
+        Qstring askforonevote(Qstring,Qstring,int=10000);//user info
+        bool askforonemessage(Qstring,Qstring,Qstring,int=10000);//username channel info
         void run();
     signal:
         void receiveOK();

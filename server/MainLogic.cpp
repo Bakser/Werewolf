@@ -171,9 +171,10 @@ void Player::handle(Qstring message){
 }
 //7
 const Qstring roleToInt[]={Qstring("villager"),Qstring("werewolf"),Qstring("prophet"),Qstring("witch"),Qstring("defender"),Qstring("hunter")};
-Gamestatus::Gamestatus(vector<Qstring> users,vector<int> _setting){
+Gamestatus::Gamestatus(vector<Qstring> users,vector<int> _setting,Game* _game){
     setting=_setting;
     playerid=users;
+    game=_game;
     int sum=0;
     vector<int>_roles;
     for(int i(1);i<7;i++)
@@ -186,7 +187,7 @@ Gamestatus::Gamestatus(vector<Qstring> users,vector<int> _setting){
     for(int i(0);i<users.size();i++){
         Qstring c=users[i];
         alive[c]=1;
-        cap[c]=0;
+        cap[c]=used1[c]=used2[c]=0;
         role[c]=roleToInt[_roles[i]];
         player[c]=new Player(c,roleToInt[_roles[i]]);
         if(!roleplayer.count(roleToInt[_roles[i]]))
@@ -247,7 +248,7 @@ void Gamestatus::changecap(Qstring username){
     cap[username]=1;
     return;
 }
-Qstring Gamestatus::vote(vector<Player*> voters){
+Qstring Gamestatus::vote(vector<Player*> voters){//投票过程 如果多人平票以@username\n格式返回
     static map<Qstring,double> mp;
     mp.clear();
     for(auto c:voters)
@@ -256,10 +257,17 @@ Qstring Gamestatus::vote(vector<Player*> voters){
             mp[c->lastvote]+=(cap[c->username]?1.5:1.0);
         }
     double tmp=0.0;Qstring res;
+    bool flag=0;
     for(auto c:mp)
         if(mp.second>tmp){
             tmp=mp.second;
             res=mp.first;
+            flag=0;
+        }
+        else if(mp.second==tmp){
+            flag=1;
+            if(!flag)res=nameform(res);
+            res+=nameform(mp.first);
         }
     return res;
 }
@@ -267,7 +275,7 @@ Game::Game(vector<Qstring> _users,vector<int> setting,ServerNetworkInterface* _n
     networkInterface=_networkInterface;
     room=_room;
     users=_users;
-    status=new Gamestatus(_users,setting);
+    status=new Gamestatus(_users,setting,this);
 }
 bool Game::canHandle(Qstring message){
     return 1;
@@ -292,7 +300,7 @@ bool Game::judgewait(){
         i->said=0;
     for(auto i:waitSpecial)
         i->special=0;
-    waitVote=waitMessage=waitSpecial=vector<Player*>();
+    //waitVote=waitMessage=waitSpecial=vector<Player*>();
     return 1;
 }
 void Game::set(Qstring username,bool vote,bool say,Qstring channel=Qstring("Room")){
@@ -315,20 +323,190 @@ void Game::startAwaitsession(int msec){
     loop.exec();
 }
 void Game::broadcast(Qstring type,Qstring message,bool f=0){
+    if(type==Qstring("Allalive")){
+        for(auto c:users)
+            if(status->alive[c])
+                sendMessage(c,message);
+        return;
+    }
     for(auto c:users)
         if(status->canbroad(c,type,f))
             sendMessage(c,message);
 }
 void Game::handle(Qstring username,Qstring message){
     if(message[0]=='w'&&message[4]=='c')
-        broadcast(Qstring("werewolf"),message);
+        broadcast(Qstring("werewolf"),message,1);
     status->player[username]->handle(message);
     if(judgewait())
         emit receiveOK();
 }
+Qstring Game::askforonevote(Qstring username,Qstring info,int msec=10000){//这里的计时请client调小点自己计，务必不要在计时结束后发包
+    set(username,1,0);
+    waitVote=waitMessage=vector<Player*>();
+    waitVote.push_back(status->player[username]);
+    if(info.length())
+        sendMessage(username,info);
+    startAwaitsession(msec);
+    set(username,0,0);
+    return status->player[username]->lastvote;
+}
+bool Game::askforonemessage(Qstring username,Qstring channel,Qstring info,int msec=20000){
+    set(username,0,1,channel);
+    waitVote=waitMessage=vector<Player*>();
+    waitMessage.push_back(status->player[username]);
+    if(info.length())
+        sendMessage(username,info);
+    startAwaitsession(msec);
+    set(username,0,0);
+    return 1;
+}
+void Game::closeall(){
+    for(auto c:users)
+        set(c,0,0);
+}
+int deadclear(vector<Qstring> buffer,int say){
+    if(buffer.empty())return 0;
+    Qstring tmp=Qstring("Die\n");
+    for(auto c:buffer){
+        tmp+=nameform(c);
+        sendMessage(c,"Youdie");
+    }
+    if(say!=2)room->broadcast(tmp);
+    for(auto c:buffer)
+        if(status->role[c]==Qstring("hunter")&&!poied[c]){
+            Qstring tmp=askforonevote(c,"Carry");
+            if(tmp.length()){
+                deadclear(vector<Qstring>(tmp),2);
+                room->broadcast(Qstring("Hunter\n")+nameform(c)+nameform(tmp);
+            }
+        }
+    for(auto c:buffer)
+        if(status->cap[c]){
+            room->broadcast("Captaindie");
+            Qstring tmp=askforonevote(c,"Pass");
+            room->broadcast(Qstring("Captian\n")+nameform(tmp));
+            if(tmp.length())
+                status->changecap(tmp);
+        }
+    if(say){
+        for(auto c:buffer)
+            askforonemessage(c,"Room","Tellsth");
+    }
+    int res=0;
+    for(auto c:buffer)
+        res=max(res,status->die(c));
+    reportall();
+    return res;
+}
+Qstring Game::allvote(Qstring info,int msec){
+    waitVote=waitMessage=vector<Player*>();
+    for(auto c:users)
+        if(status->alive[c])
+            waitVote.push_back(status->player[c]);
+    if(info.length())
+        broadcast("Allalive",info);
+    broadcast("Allalive","Set\n1 0 Room");
+    startAwaitsession(10000);
+    broadcast("Allalive","Set\n0 0 Room");
+    return status->vote(waitVote);
+}
 int Game::dayround(int rn){
+    room->broadcast(Qstring("Day ")+IntToStr(rn>>1));
+    closeall();
+    int tmp=deadclear(deadbuffer,rn==1);
+    deadbuffer.clear();
+    Qstring t;
+    if(tmp)return tmp;
+    tmp=deadclear(deadbuffer,1);
+    if(rn==1){
+        t=allvote("",10000);
+        if(t[0]=='@')
+            t=Qstring("");
+        else status->changecap(t);
+        broadcast("Allalive",Qstring("Captain\n")+nameform(t));
+    }
+    srand(time(0));
+    int order=rand()&1,s=0,n=users.size();Qstring cap("");
+    for(auto c:users)
+        if(status->alive[c]&&status->cap[c]){
+            cap=c;
+            askforonevote(c,"Order");
+            order=status->player[c]->lastvote[0]=='1';
+        }
+    if(cap.length()){
+        for(int i(0);i<n;i++)
+            if(users[i]==cap)
+                s=i;
+    }
+    order=!order?-1:1;
+    for(int i((s+order+n)%n);i!=s;i=(i+order+n)%n)
+        askforonemessage(users[i],"Room","",15000);
+    if(cap.length()) askforonemessage(cap,"Room","",20000);
+    else askforonemessage(users[0],"Room","",15000);
+    t=allvote("Vote",10000);
+    if(t[0]=='@'){
+        broadcast("Allalive",Qstring("Equal\n")+t);
+        t=allvote("Vote",10000);
+        if(t[0]!='@')
+            deadbuffer.push_back(t);
+    }
+    else deadbuffer.push_back(t);
+    tmp=deadclear(deadbuffer,1);
+    if(tmp)return tmp;
 }
 int Game::nightround(int rn){
+    room->broadcast(Qstring("Night ")+IntToStr(rn>>1));
+    reportall();
+    closeall();
+    static map<Qstring,bool> guarded,killed,saved,poisoned;
+    guarded.clear();killed.clear();saved.clear();poisoned.clear();
+    static Qstring tmp;
+    //守卫
+    for(auto c:status->roleplayer[Qstring("defender")])
+        if(status->alive[c->username]){
+            tmp=askforonevote(c->username,Qstring("Guard"));
+            if(tmp.length())
+                guarded[tmp]=1;
+        }
+    //狼人
+    waitVote=waitMessage=vector<Player*>();
+    for(auto c:status->roleplayer[Qstring("werewolf")])
+        if(status->alive[c->username])
+            waitVote.push_back(c);
+    for(auto c:waitVote)
+        set(c->username,1,1,Qstring("Wolf"));
+    startAwaitsession(30000);
+    for(auto c:waitVote)
+        set(c->username,0,0);
+    tmp=status->vote(waitVote);
+    if(tmp[0]!='@')
+        killed[tmp]=1;
+    //女巫
+    static Qstring killd=tmp;
+    for(auto c:status->roleplayer[Qstring("witch")])
+        if(status->alive[c->username]){
+            if(!status->used1[c->username]){
+                tmp=askforonevote(c->username,Qstring("Witch\n@")+killd);
+                if(tmp.length())
+                    saved[tmp]=1,status->used1[c->username]=1;
+            }
+            if(!status->used2[c->username]){
+                tmp=askforonevote(c->username,Qstring("Witch"));
+                if(tmp.length())
+                    poisoned[tmp]=1,status->used2[c->username]=1;
+            }
+        }
+    //预言家
+    for(auto c:status->roleplayer[Qstring("prophet")])
+        if(status->alive[c->username]){
+            tmp=askforonevote(c->username,Qstring("Prophet"));
+            if(tmp.length())
+                sendMessage(c->username,(status->role[tmp]==Qstring("werewolf")?Qstring("Bad"):Qstring("Good")));
+        }
+    for(auto c:users)
+        if((killed[c]&&(int(guarded[c])+int(saved[c])!=1))||poisoned[c])
+            deadbuffer.push_back(c),poied[c]=1;
+    return 0;
 }
 void Game::run(){
     int res=0;
