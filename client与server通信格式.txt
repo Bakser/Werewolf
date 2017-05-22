@@ -1,3 +1,5 @@
+守卫请client检查他有没有连续两夜守同一个人
+自爆功能不要了
 client向server数据格式 roomnumber代表房间号
 join roomnumber
 
@@ -22,7 +24,7 @@ wolfchat roomnumber //夜晚狼人频道
 xxxxxxxxx@username 
 
 vote roomnumber
-@username //投/指定的那个人的username username中不允许带换行符,若@后\n前没有东西表示弃票
+@username //投/指定的那个人的username username中不允许带换行符,若@后\n前没有东西表示弃票 1/0表示警长选择逆时针/顺时震
 
 /*这三个功能都用vote实现，知道这个意思就行
 carry roomnumber
@@ -63,36 +65,95 @@ username 1/0 1/0 //用户名 活着/死了 警长/非警长
 Set
 0/1 0/1 channel //能否投票，能否说话，什么频道（Room/Wolf)
 
-Boom //可以自爆了
+Witch
+@username //告诉女巫谁死了，如果@后到\n前没有东西表示没人，如果没有@代表你要选救谁
 
-Boomend //不能自爆了
+Die//告诉大家昨天晚上谁死了。可以多行跟多个@表示
+@username
+@username
 
-Died @username //告诉女巫谁死了，如果@后到\n前没有东西表示没人死
+Guard //守卫你守谁
+
+Prophet//告诉预言家选择验人
 
 Good/Bad //告诉预言家验的人身份怎样
-
-Voteforcaptain//票队长
-
-Votefordead//票死人 白天投票or晚上狼人投
-
-Votefordefend //决定守谁
 
 Day x//第几个白天 从0开始
 
 Night x//第几个黑夜，从0开始
 
+Guard //选个人守护
+
+Choosecap//开始选警长辣 会按顺序要求每人说句话，不想选就直接说不选就好了
+
+Vote //票死人
+
+Captain
+@username //username成为警长了（如果就是你请client显示点特别的东西），如果没有警长@后面留空
+
+Order //警长你定个发言顺序吧
+
 Youdie //你死了 
+
+Pass //警长你挂了，要不要传警徽
+
+Carry //猎人你挂了而且可以选个人带走（如果是被毒了就不能选人带走，也就不会收这个包）
 
 Tellsth //讲点遗言 没这句不要讲遗言
 
+Equal//以下人平票
+@username1
+@username2
+
+Captaindie//警长死了
+
 GameEnded
+
+Hunter //username1是李二，他想带走username2
+@username1
+@username2
 
 YouWin/YouLose
 
 EndStatus
 username role 1/0 1/0 //把所有人以及身份都说出来
 
+流程简介（省略包中换行，包的格式严格按上面来）
+夜晚
+先群发一个Night x 包
+先汇报一下场上情况//reportall 一个Status包
+关掉所有开关 //closeall Set 0 0
+守卫（如果活着，下略）：
+问守卫你守谁//askforonevote("Guard") 发一个Guard包 等10s（client实现等10s和判断不能连续守同一个人，下略）返回一个Vote包
+给30s，狼人的狼人聊天频道打开，同时投票也打开，选择干谁//发一个Set 1 1 Wolf包，wolfchat包随便发，要求收到所有活着狼人的vote包，时间到后再发一个Set 0 0 Room包
+女巫阶段：
+给10s，发一个Witch @user包，告知女巫谁死了，返回一个vote包（不救@后面留空，救就把那个名字原样写上，client判断只有初夜可以自救）
+给10s，发一个Witch包，返回一个vote包
+预言家：
+给10s，发一个Prophet包，返回一个vote包，发一个Good/Bad包
 
+白天
+先群发一个Day x 包
+关掉所有开关
+群发昨晚谁死了//发Die包，如果没人死就一个@也没有
+如果你是猎人而且死了，10s时间，发给你一个Carry包，发一个Set 1 0 Room 返回一个vote包选择带谁走（@后面留空表示不带人，请client根据上一次的status和上一个Die包告诉李二不能带已死的人）时间到发一个Set 0 0 Room
+如果李二死了而且选择带人，群发一个Hunter包，不需要任何回复
+如果你是警长而且死了，群发Captaindie，发给你一个Pass包，Set 1 0 Room 10s时间，回一个vote包，然后Set 0 0 Room ，群发Captain
+对初夜死的人或者猎人带走的人，10s时间，发一个Tellsth包，一个Set 0 1 Room 返回一个roomchat包，时间到发一个Set 0 0 Room
+报告一下情况
+第一日：
+以下均对活着的玩家
+群发一个 Choosecap包，然后挨个发set 0 1 Room包，每人10s说句话（roomchat包），不选就说不选，时间到了发一个Set 0 0 Room包
+10s时间投票，发一个Set 1 0 Room包，返回vote包，时间到了发一个Set 0 0 Room包
+群发一个Captian @包，不需要回复
+以下每日相同
+10s，发给警长（如果有）一个Order包，Set 1 0 Room 返回一个vote @1/0 然后Set 0 0 Room
+按顺序活着的人15s Set 0 1 Room 返回一个roomchat 然后Set 0 0 Room
+警长（如果存在） 20s Set 0 1 Room 返回一个roomchat 然后Set 0 0 Room
+群发：Vote包 10s Set 1 0 Room 返回一个vote包然后 Set 0 0 Room
+如果平票 发Equal包，重复一次上述投票(从新发一遍Vote包）（请client限制只能投Equal里面的人）
+
+就跟上面初夜一样发Die包，按猎人什么的结算，都有遗言，结算完后报告一次情况
 角色代号
 werewolf
 villager
