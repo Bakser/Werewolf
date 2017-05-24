@@ -13,14 +13,15 @@ public:
     virtual ~EventHandler() = default;
     EventHandler(ServerNetworkInterface*);
     void tryHandle(QString userName, QString message);
-
+    void setNetworkInterface(ServerNetworkInterface*);
 protected:
     ServerNetworkInterface *networkInterface;
+    int parseToInt(QString);
+    void sendMessage(QString, QString);
 private:
     virtual bool canHandle(QString) = 0;
-    virtual void Handle(QString, QString) = 0;
+    virtual void handle(QString, QString) = 0;
     virtual EventHandler* selectHandler(QString) = 0;
-    void sendMessage(QString, QString);
 };
 
 #endif // EVENTHANDLER_H

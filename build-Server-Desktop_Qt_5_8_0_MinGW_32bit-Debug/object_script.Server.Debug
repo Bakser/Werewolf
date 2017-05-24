@@ -6,7 +6,11 @@ INPUT(
 ./debug\spliter.o
 ./debug\clientstatus.o
 ./debug\dollarspliter.o
-./debug\mainlogic.o
+./debug\Game.o
+./debug\ServerCenter.o
+./debug\RoomHandler.o
+./debug\Gamestatus.o
 ./debug\moc_maindialog.o
 ./debug\moc_servernetworkinterface.o
+./debug\moc_Game.o
 );
