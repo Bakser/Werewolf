@@ -40,7 +40,7 @@ guard roomnumber //决定守护谁，格式同上
 To client 格式
 向用户发的包的格式
 //开始前
-Status    //每次收到Status包刷新一次页面
+Status    //每	次收到Status包刷新一次页面
 xx xx xx xx  //设置
 user1 0/1 //用户与是否举手，不足，需client自己补全
 user2 0/1
@@ -71,8 +71,6 @@ Witch
 Die//告诉大家昨天晚上谁死了。可以多行跟多个@表示
 @username
 @username
-
-Guard //守卫你守谁
 
 Prophet//告诉预言家选择验人
 
