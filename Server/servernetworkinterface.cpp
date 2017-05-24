@@ -27,26 +27,43 @@ void ServerNetworkInterface::handleConnection()
     qDebug() << "A new connection found...";
     QTcpSocket *tcpSocket = tcpServer->nextPendingConnection();
     //get socket
-    QSignalMapper *signalMapper = new QSignalMapper(this);
-    signalMapper->setMapping(tcpSocket, tcpSocket);
-    connect(tcpSocket, SIGNAL(readyRead()), signalMapper, SLOT(map()));
-    connect(signalMapper, SIGNAL(mapped(QObject*)), this, SLOT(startRead(QObject*)));
-    //link connections
-    connect(tcpSocket, SIGNAL(disconnected()), tcpSocket, SLOT(deleteLater()));
+    //QSignalMapper *signalMapper;
     /*
+    signalMapper = new QSignalMapper(this);
     signalMapper->setMapping(tcpSocket, tcpSocket);
     connect(tcpSocket, SIGNAL(disconnected()), signalMapper, SLOT(map()));
     connect(signalMapper, SIGNAL(mapped(QObject*)), this, SLOT(disconnected(QObject*)));
+    delete signalMapper;
     */
+    connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    /*
+    signalMapper = new QSignalMapper(this);
+    signalMapper->setMapping(tcpSocket, tcpSocket);
+    connect(tcpSocket, SIGNAL(readyRead()), signalMapper, SLOT(map()));
+    connect(signalMapper, SIGNAL(mapped(QObject*)), this, SLOT(startRead(QObject*)));
+    delete signalMapper;
+    */
+    //link connections
+    //connect(tcpSocket, SIGNAL(disconnected()), tcpSocket, SLOT(deleteLater()));
+    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(startRead()));
+    qDebug() << "Socket connected successfully...";
     //delete after disconnected
 }
 
-void ServerNetworkInterface::startRead(QObject* object)
+void ServerNetworkInterface::startRead()
+{
+    QTcpSocket *tcpSocket = (QTcpSocket*)sender();
+    startRead(tcpSocket);
+}
+
+void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
 {
     //qDebug() << "start reading...";
-    QTcpSocket *tcpSocket = qobject_cast<QTcpSocket*>(object);
+    //QTcpSocket *tcpSocket = qobject_cast<QTcpSocket*>(object);
+    //QTcpSocket *tcpSocket = (QTcpSocket*)sender();
     if (tcpSocket)
     {
+        //qDebug() << "start reading from user " + socketClientStatus[tcpSocket].getUserName();
         QDataStream in;
         in.setVersion(QDataStream::Qt_4_0);
         in.setDevice(tcpSocket);
@@ -57,6 +74,7 @@ void ServerNetworkInterface::startRead(QObject* object)
         if (!in.commitTransaction())
         {
             //qDebug() << "Not complete!";
+            //startSend(tcpSocket);
             return;
         }
         //qDebug() << "Read all OK!";
@@ -80,6 +98,7 @@ void ServerNetworkInterface::startRead(QObject* object)
                 userNameSocket[userName] = tcpSocket;
                 socketClientStatus[tcpSocket] = ClientStatus(userName);
                 sendMessage(userName, "login ok");
+                //qDebug() << "Line 81";
             }
         }
         else
@@ -104,6 +123,7 @@ void ServerNetworkInterface::startRead(QObject* object)
 
 void ServerNetworkInterface::sendMessage(QString userName, QString message)
 {
+    qDebug() << "Send message " + message + " to user " + userName;
     socketClientStatus[userNameSocket[userName]].addSendString(message);
 }
 
@@ -120,14 +140,15 @@ void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket)
     startRead(tcpSocket);
 }
 
-/*
-void ServerNetworkInterface::disconnected(QObject* object)
+void ServerNetworkInterface::disconnected()
 {
-    QTcpSocket *tcpSocket = qobject_cast<QTcpSocket*>(object);
+
+    //QTcpSocket *tcpSocket = qobject_cast<QTcpSocket*>(object);
+    QTcpSocket *tcpSocket = (QTcpSocket*)sender();
     QString userName = socketClientStatus[tcpSocket].getUserName();
     qDebug() << "User " + userName + " disconnected from server.";
+    tcpSocket->deleteLater();
     //update map
     userNameSocket.erase(userNameSocket.find(userName));
     socketClientStatus.erase(socketClientStatus.find(tcpSocket));
 }
-*/

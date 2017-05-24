@@ -21,9 +21,9 @@ public:
 signals:
 
 private slots:
-    void startRead(QObject*);
+    void startRead();
     void handleConnection();
-    //void disconnected(QObject*);
+    void disconnected();
 private:
     EventHandler* mainHandler;
     QTcpServer *tcpServer;
@@ -32,6 +32,7 @@ private:
     Spliter *spliter;
 
     void startSend(QTcpSocket*);
+    void startRead(QTcpSocket*);
 };
 
 #endif // SERVERNETWORKINTERFACE_H
