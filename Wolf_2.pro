@@ -25,17 +25,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mybutton.cpp \
-    village.cpp \
-    drawcard.cpp
+    night.cpp \
+    master.cpp \
+    newroom.cpp \
+    joinroom.cpp
 
 HEADERS  += mainwindow.h \
-    mybutton.h \
-    village.h \
-    drawcard.h
+    night.h \
+    master.h \
+    newroom.h \
+    joinroom.h
 
 FORMS    += mainwindow.ui \
-    drawcard.ui
+    night.ui \
+    master.ui \
+    newroom.ui \
+    joinroom.ui
 
 DISTFILES += \
     UI/_cupido.jpg \
@@ -54,3 +59,6 @@ DISTFILES += \
     UI/background.jpeg \
     UI/icon.jpg \
     UI/main.jpg
+
+RESOURCES += \
+    UI/night.qrc

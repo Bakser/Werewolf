@@ -14,7 +14,7 @@ Village::Village(QWidget *parent):QWidget(parent)
 
 Village::Village(int id, int number, QWidget *parent):QWidget(parent)
 {
-    image=QPixmap("/Users/flyingturtle/Wolf/UI/icon.jpg");
+    image=QPixmap("/UI/icon.jpg");
     resize(image.width(),image.height());
     numberofjoin=number;
     tabID=id;

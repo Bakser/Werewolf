@@ -1,14 +1,16 @@
 #include "mainwindow.h"
 #include "mybutton.h"
 #include "village.h"
+#include "drawcard.h"
 #include <QApplication>
 #include <QSplashScreen>
 #include <QThread>
-
+//#include <clientnetworkinterface.h>
 int main(int argc, char *argv[])
 {
+    //ClientNetworkInterface *clientNetworkInterface = new clientNetworkInterface();
     QApplication a(argc, argv);
-    QSplashScreen ss(QPixmap("UI/main.jpg"));
+    QSplashScreen ss(QPixmap("/Users/flyingturtle/Wolf_2/UI/main.jpg"));
     ss.show();
     a.processEvents();
     QThread::sleep(2);
@@ -19,9 +21,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-
-    Village v;
-    v.show();
 
 
 
