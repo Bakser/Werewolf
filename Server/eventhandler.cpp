@@ -1,11 +1,9 @@
 #include "eventhandler.h"
 
-EventHandler::EventHandler()
+EventHandler::EventHandler(QObject *parent) : QObject(parent)
 {
 
 }
-
-
 
 EventHandler::EventHandler(ServerNetworkInterface *_networkInterface)
 {

@@ -33,3 +33,10 @@ void ServerCenter::handle(QString username,QString message){
 EventHandler* ServerCenter::selectHandler(QString message){
     return this->Rooms[parseToInt(message)];
 }
+QString IntToStr(int x){
+    return QString::number(x);
+}
+QString nameform(QString x){
+    if(x[0]=='@')return x;
+    return QString("@")+x+QString("\n");
+}

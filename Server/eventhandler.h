@@ -6,10 +6,11 @@
 
 class ServerNetworkInterface;
 
-class EventHandler
+class EventHandler : public QObject
 {
+    Q_OBJECT
 public:
-    EventHandler();
+    explicit EventHandler(QObject* parent = 0);
     virtual ~EventHandler() = default;
     EventHandler(ServerNetworkInterface*);
     void tryHandle(QString userName, QString message);

@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
+/*
 QString IntToStr(int x){
     return QString::number(x);
 }
@@ -19,6 +20,9 @@ QString nameform(QString x){
     if(x[0]=='@')return x;
     return QString("@")+x+QString("\n");
 }
+*/
+QString IntToStr(int);
+QString nameform(QString x);
 class Game;
 class RoomHandler;
 class ServerCenter:public EventHandler{

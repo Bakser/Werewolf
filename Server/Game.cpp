@@ -50,7 +50,7 @@ void Game::reportall(){
 void Game::startAwaitsession(int msec){
     QTimer *timer = new QTimer(this);
     timer->setInterval(msec);
-    QEventLoop *loop = new QEventloop(this);
+    QEventLoop *loop = new QEventLoop(this);
     timer->start();
     connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
     connect(this, SIGNAL(receiveOK()), loop, SLOT(quit()));

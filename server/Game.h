@@ -1,11 +1,11 @@
 #ifndef Game_H
 #define Game_H
 #include "eventhandler.h"
-#include "EventHandler.h"
+#include "RoomHandler.h"
 #include "Gamestatus.h"
 class Gamestatus;
 class Player;
-class Game:public EventHandler{
+class Game: public EventHandler{
     Q_OBJECT
     protected:
         ServerNetworkInterface* networkInterface;
