@@ -56,7 +56,7 @@ class RoomHandler:public EventHandler{
         bool canStart();
         QString get_status();
         void flush();
-        void buildroom();
+        void buildroom(QString);
         void startgame();
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);

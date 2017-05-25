@@ -8,7 +8,7 @@ void EventHandler::sendMessage(QString username,QString message){
 }
 void EventHandler::tryHandle(QString username,QString message){
     if(this->canHandle(message))
-        this->handle(message);
+        this->handle(username,message);
     else
         selectHandler(message)->tryHandle(username,message);
 }
@@ -37,8 +37,8 @@ void ServerCenter::handle(QString username,QString message){
             this->Rooms[roomnumber]=new RoomHandler(this->networkInterface);//TODO
         this->Rooms[roomnumber]->tryHandle(username,message);
     }
-    else if(message[0]=='w'&&message[2]=='r')){
-        for(auto i:rooms)
+    else if(message[0]=='w'&&message[2]=='r'){
+        for(auto i:Rooms)
             i.second->broadcast(message);
     }
 }
@@ -92,7 +92,7 @@ void RoomHandler::flush(){
         sendMessage(i,sta);
     if(users[0]!=owner){
         sendMessage(users[0],QString("OwnerNew"));//注意可以半路更换房主
-        owner=user[0];
+        owner=users[0];
     }
     sendMessage(owner,canStart()?QString("StartButton 1"):QString("StartButton 0"));
 }
@@ -103,8 +103,8 @@ void RoomHandler::broadcast(QString message){
 QString RoomHandler::get_status(){
     QString res("Status\n");
     for(auto i:setting)
-        res+=IntToStr(i)+QString(" ");//此处行尾有一个空格
-    res+=QString("\n")；
+        res+=IntToStr(i)+QString(" ");
+    res+=QString("\n");
     for(auto i:users)
         res+=i+(ready[i]?" 1\n":" 0\n");//注意没有补足该有的行数
     return res;
@@ -142,7 +142,7 @@ void RoomHandler::handle(QString username,QString message){
     else if(message[0]=='r'){
         this->broadcast(message);
         if(gamestarted)
-            game->receivechat(username,message);//To be dicussed
+            game->tryHandle(username,message);//To be dicussed
     }
     else if(message[0]=='s')
         startgame();
@@ -187,7 +187,7 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
     for(int i(0);i<setting[0]-sum;i++)
         _roles.push_back(0);
     srand(time(0));
-    random_shuffle(_roles);
+    std::random_shuffle(_roles);
     for(int i(0);i<users.size();i++){
         QString c=users[i];
         alive[c]=1;
@@ -348,6 +348,7 @@ QString Game::askforonevote(QString username,QString info,int msec=10000){//这�
     set(username,1,0);
     waitVote=waitMessage=std::vector<Player*>();
     waitVote.push_back(status->player[username]);
+    status->player[username]->voted=0;
     if(info.length())
         sendMessage(username,info);
     startAwaitsession(msec);
@@ -358,6 +359,7 @@ bool Game::askforonemessage(QString username,QString channel,QString info,int ms
     set(username,0,1,channel);
     waitVote=waitMessage=std::vector<Player*>();
     waitMessage.push_back(status->player[username]);
+    status->player[username]->said=0;
     if(info.length())
         sendMessage(username,info);
     startAwaitsession(msec);
@@ -405,8 +407,10 @@ int deadclear(std::vector<QString> buffer,int say){
 QString Game::allvote(QString info,int msec){
     waitVote=waitMessage=std::vector<Player*>();
     for(auto c:users)
-        if(status->alive[c])
+        if(status->alive[c]){
             waitVote.push_back(status->player[c]);
+            status->player[c]->voted=0;
+           }
     if(info.length())
         broadcast("Allalive",info);
     broadcast("Allalive","Set\n1 0 Room");
@@ -475,8 +479,10 @@ int Game::nightround(int rn){
     //狼人
     waitVote=waitMessage=std::vector<Player*>();
     for(auto c:status->roleplayer[QString("werewolf")])
-        if(status->alive[c->username])
+        if(status->alive[c->username]){
             waitVote.push_back(c);
+            c->voted=0;
+        }
     for(auto c:waitVote)
         set(c->username,1,1,QString("Wolf"));
     startAwaitsession(30000);
