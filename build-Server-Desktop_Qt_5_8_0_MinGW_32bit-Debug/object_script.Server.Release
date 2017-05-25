@@ -6,10 +6,10 @@ INPUT(
 ./release\spliter.o
 ./release\clientstatus.o
 ./release\dollarspliter.o
-./release\Game.o
 ./release\ServerCenter.o
 ./release\RoomHandler.o
 ./release\Gamestatus.o
+./release\Game.o
 ./release\moc_maindialog.o
 ./release\moc_servernetworkinterface.o
 ./release\moc_Game.o

@@ -46,7 +46,7 @@ void RoomHandler::flush(){
         sendMessage(i,sta);
     if(users[0]!=owner){
         sendMessage(users[0],QString("OwnerNew"));//注意可以半路更换房主
-        owner=user[0];
+        owner=users[0];
     }
     sendMessage(owner,canStart()?QString("StartButton 1"):QString("StartButton 0"));
 }
@@ -57,8 +57,8 @@ void RoomHandler::broadcast(QString message){
 QString RoomHandler::get_status(){
     QString res("Status\n");
     for(auto i:setting)
-        res+=IntToStr(i)+QString(" ");//此处行尾有一个空格
-    res+=QString("\n")；
+        res+=IntToStr(i)+QString(" ");
+    res+=QString("\n");
     for(auto i:users)
         res+=i+(ready[i]?" 1\n":" 0\n");//注意没有补足该有的行数
     return res;
@@ -73,7 +73,7 @@ void RoomHandler::buildroom(QString str){
                 tmp=1;
             }
             else
-                tmp*=(c-'0');
+                tmp*=(c.toLatin1()-'0');//to be
         }
     if(setting.size()<7)
         setting.push_back(tmp);
@@ -96,7 +96,7 @@ void RoomHandler::handle(QString username,QString message){
     else if(message[0]=='r'){
         this->broadcast(message);
         if(gamestarted)
-            game->receivechat(username,message);//To be dicussed
+            game->tryHandle(username,message);//To be dicussed
     }
     else if(message[0]=='s')
         startgame();

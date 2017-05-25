@@ -20,10 +20,10 @@ SOURCES += main.cpp\
     spliter.cpp \
     clientstatus.cpp \
     dollarspliter.cpp \
-    Game.cpp \
     ServerCenter.cpp \
     RoomHandler.cpp \
-    Gamestatus.cpp
+    Gamestatus.cpp \
+    Game.cpp
 
 HEADERS  += maindialog.h \
     servernetworkinterface.h \

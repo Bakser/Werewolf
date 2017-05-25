@@ -3,7 +3,9 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInterface* _networkInterface,EventHandler* _room){
+#include <qtimer.h>
+#include <qeventloop.h>
+Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInterface* _networkInterface,RoomHandler* _room){
     networkInterface=_networkInterface;
     room=_room;
     users=_users;
@@ -47,12 +49,12 @@ void Game::reportall(){
 }
 void Game::startAwaitsession(int msec){
     QTimer *timer = new QTimer(this);
-    timer.setInterval(msec);
-    QEventloop *loop = new QEventloop(this);
+    timer->setInterval(msec);
+    QEventLoop *loop = new QEventloop(this);
     timer->start();
     connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
     connect(this, SIGNAL(receiveOK()), loop, SLOT(quit()));
-    loop.exec();
+    loop->exec();
 }
 void Game::broadcast(QString type,QString message,bool f=0){
     if(type==QString("Allalive")){
@@ -82,7 +84,7 @@ QString Game::askforonevote(QString username,QString info,int msec=10000){//è¿™é
     set(username,0,0);
     return status->player[username]->lastvote;
 }
-bool Game::askforonemessage(QString username,QString channel,QString info,int msec=20000){
+bool Game::askforonemessage(QString username,QString channel,QString info,int msec=10000){
     set(username,0,1,channel);
     waitVote=waitMessage=std::vector<Player*>();
     waitMessage.push_back(status->player[username]);
@@ -96,7 +98,7 @@ void Game::closeall(){
     for(auto c:users)
         set(c,0,0);
 }
-int deadclear(std::vector<QString> buffer,int say){
+int Game::deadclear(std::vector<QString> buffer,int say){
     if(buffer.empty())return 0;
     QString tmp=QString("Die\n");
     for(auto c:buffer){
@@ -107,9 +109,10 @@ int deadclear(std::vector<QString> buffer,int say){
     for(auto c:buffer)
         if(status->role[c]==QString("hunter")&&!poied[c]){
             QString tmp=askforonevote(c,"Carry");
+
             if(tmp.length()){
-                deadclear(std::vector<QString>(tmp),2);
-                room->broadcast(QString("Hunter\n")+nameform(c)+nameform(tmp);
+                deadclear(std::vector<QString>(1,tmp),2);
+                room->broadcast(QString("Hunter\n")+nameform(c)+nameform(tmp));
             }
         }
     for(auto c:buffer)
@@ -126,7 +129,7 @@ int deadclear(std::vector<QString> buffer,int say){
     }
     int res=0;
     for(auto c:buffer)
-        res=max(res,status->die(c));
+        res=std::max(res,status->die(c));
     reportall();
     return res;
 }

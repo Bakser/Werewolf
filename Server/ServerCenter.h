@@ -12,10 +12,18 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
+QString IntToStr(int x){
+    return QString::number(x);
+}
+QString nameform(QString x){
+    if(x[0]=='@')return x;
+    return QString("@")+x+QString("\n");
+}
 class Game;
+class RoomHandler;
 class ServerCenter:public EventHandler{
     protected:
-        std::map<int,EventHandler*> Rooms;
+        std::map<int,RoomHandler*> Rooms;
     private:
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);

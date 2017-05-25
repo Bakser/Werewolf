@@ -1,9 +1,13 @@
+#include <algorithm>
+#include <cstdlib>
+#include "Gamestatus.h"
 Player::Player(QString _username,QString _role){
     username=_username;
     role=_role;
     said=voted=0;
 }
 void Player::handle(QString message){
+    static QRegExp sep("*");
     if(message[4]=='c')said=1; //worldchat已经被过滤
     else if(message[0]=='v'){
         voted=1;
@@ -12,7 +16,7 @@ void Player::handle(QString message){
             if(message[i]=='@')s=i+1;
             else if(message[i]=='\n')t=i;
         if(s>=t)lastvote=QString("");
-        else lastvote=message.substring(s,t);
+        else lastvote=message.section(sep,s,t);
     }
     else special=1;//保证不是别的
 }
@@ -30,20 +34,23 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
     for(int i(0);i<setting[0]-sum;i++)
         _roles.push_back(0);
     srand(time(0));
-    random_shuffle(_roles);
+    std::random_shuffle(_roles.begin(),_roles.end());
     for(int i(0);i<users.size();i++){
         QString c=users[i];
         alive[c]=1;
         cap[c]=used1[c]=used2[c]=0;
         role[c]=roleToInt[_roles[i]];
         player[c]=new Player(c,roleToInt[_roles[i]]);
-        if(!roleplayer.count(roleToInt[_roles[i]]))
-            roleplayer[roleToInt[_roles[i]]]=std::vector<Player*>(player[c]);
+        if(!roleplayer.count(roleToInt[_roles[i]])){
+            std::vector<Player*> tmpv;
+            tmpv.push_back(player[c]);
+            roleplayer[roleToInt[_roles[i]]]=tmpv;
+        }
         else roleplayer[roleToInt[_roles[i]]].push_back(player[c]);
     }
 }
 QString Gamestatus::showonestatus(QString name){
-    return name+QString(" ")+role[name]+(alive[name]?QString(" 1"):QString(" 0"))+(cap[c]?QString(" 1\n"):QString(" 0\n"));;
+    return name+QString(" ")+role[name]+(alive[name]?QString(" 1"):QString(" 0"))+(cap[name]?QString(" 1\n"):QString(" 0\n"));;
 }
 QString Gamestatus::showalivestatus(){
     QString res;
@@ -106,15 +113,15 @@ QString Gamestatus::vote(std::vector<Player*> voters){//投票过程 如果多�
     double tmp=0.0;QString res;
     bool flag=0;
     for(auto c:mp)
-        if(mp.second>tmp){
-            tmp=mp.second;
-            res=mp.first;
+        if(c.second>tmp){
+            tmp=c.second;
+            res=c.first;
             flag=0;
         }
-        else if(mp.second==tmp){
+        else if(c.second==tmp){
             flag=1;
             if(!flag)res=nameform(res);
-            res+=nameform(mp.first);
+            res+=nameform(c.first);
         }
     return res;
 }

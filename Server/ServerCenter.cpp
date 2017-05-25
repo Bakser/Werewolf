@@ -1,12 +1,5 @@
 #include "ServerCenter.h"
 
-QString IntToStr(int x){
-    return QString::number(x);
-}
-QString nameform(QString x){
-    if(x[0]=='@')return x;
-    return QString("@")+x+QString("\n");
-}
 // int EventHandler::parseToInt(QString message){
 //     bool flag=0;
 //     int res=1;
@@ -32,8 +25,8 @@ void ServerCenter::handle(QString username,QString message){
             this->Rooms[roomnumber]=new RoomHandler(this->networkInterface);//TODO
         this->Rooms[roomnumber]->tryHandle(username,message);
     }
-    else if(message[0]=='w'&&message[2]=='r')){
-        for(auto i:rooms)
+    else if(message[0]=='w'&&message[2]=='r'){
+        for(auto i:Rooms)
             i.second->broadcast(message);
     }
 }
