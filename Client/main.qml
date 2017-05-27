@@ -25,8 +25,8 @@ Window {
 
     Button {
         id: exitButton
-        x: 270
-        y: 294
+        x: 515
+        y: 181
         text: "exit"
         onClicked: {
             Qt.quit();
@@ -35,8 +35,8 @@ Window {
 
     Button {
         id: loginButton
-        x: 270
-        y: 232
+        x: 515
+        y: 112
         text: "login"
         onClicked: {
             console.log("login button pressed");
@@ -56,6 +56,20 @@ Window {
         onClicked: {
             console.log("test result: " + clientNetworkInterface.test());
         }
+
+        Button {
+            id: sayButton
+            x: 507
+            y: 38
+            text: "say"
+            onClicked: {
+                if (sayField.text == "")
+                    statusLabel.text = "You can't say nothing!";
+                else {
+                    clientNetworkInterface.addString(sayField.text);
+                    sayField.text = ""
+            }
+        }
     }
 
     TextField {
@@ -64,10 +78,12 @@ Window {
         y: 44
     }
 
-    TextField {
+    TextArea {
         id: sayField
         x: 220
         y: 112
+        width: 200
+        height: 330
     }
 
     Label {
@@ -82,19 +98,6 @@ Window {
         x: 166
         y: 124
         text: "say"
-    }
-
-    Button {
-        id: sayButton
-        x: 270
-        y: 172
-        text: "say"
-        onClicked: {
-            if (sayField.text == "")
-                statusLabel.text = "You can't say nothing!";
-            else
-                clientNetworkInterface.addString(sayField.text);
-        }
     }
 
 

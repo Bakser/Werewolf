@@ -1,6 +1,25 @@
 # Werewolf
 ## Deadline 2017/05/31
-## [Last Update 2017/05/24 19:36]
+## [Last Update 2017/05/27 16:23]
+
+### Client接收包方法
+
+引用```clientnetworkinterface.h/cpp```，在类中进行初始化
+
+```c++
+ClientNetworkInterface *clientNetworkInterface = new ClientNetworkInterface();
+```
+
+在你的类中进行连接:
+
+```C++
+connect(clientNetworkInterface, SIGNAL(ReceiveCommand(QString)),
+        this, SLOT(handle(QString)));
+```
+
+你的类需要实现```void handler(QString message)```，也即网络接口接收到一条来自服务器的指令```message```会调用这个函数。
+
+给服务器发送消息，调用函数```clientNetworkInterface->addString(message)```，其中```message```类型为```QString```。
 
 ### Server-Client用法
 
@@ -9,12 +28,6 @@
 3. 在用户名栏输入一个用户名，单击Login按钮。
 4. 登陆成功后，状态栏提示登陆成功，此时Say按钮可用，在say一栏写下要说的话单击say按钮。
 5. 说话的人以及说的话可以在服务器的运行栏中的```3 Application Output```中看到。（这之中同时也保留了一些通信细节）
-
-### To Do List
-
-1. Client部分通信代码先做一个demo出来方便我来添加。
-2. 通信部分文档尽快完善。
-3. 完善Game以及GUI的设计模式。
 
 ### Features
 
