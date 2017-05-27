@@ -24,14 +24,16 @@ private slots:
     void startRead();
     void handleConnection();
     void disconnected();
+	void displayError(QAbstractSocket::SocketError);
 private:
     EventHandler* mainHandler;
     QTcpServer *tcpServer;
     std::map<QString, QTcpSocket*> userNameSocket;
-    std::map<QTcpSocket*, ClientStatus> socketClientStatus;
+	//std::map<QTcpSocket*, ClientStatus> socketClientStatus;
+	std::map<QTcpSocket*, QString> socketUserName;
     Spliter *spliter;
 
-    void startSend(QTcpSocket*);
+	void startSend(QTcpSocket*, QString = "");
     void startRead(QTcpSocket*);
 };
 

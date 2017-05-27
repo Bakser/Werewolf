@@ -2,6 +2,7 @@
 #include <QSignalMapper>
 #include <QDataStream>
 #include <QByteArray>
+#include <cassert>
 
 ServerNetworkInterface::ServerNetworkInterface(EventHandler* handler, QObject* parent) : QObject(parent)
 {
@@ -46,6 +47,9 @@ void ServerNetworkInterface::handleConnection()
     //link connections
     //connect(tcpSocket, SIGNAL(disconnected()), tcpSocket, SLOT(deleteLater()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(startRead()));
+    typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
+    connect(tcpSocket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error),
+                    this, &ServerNetworkInterface::displayError);
     qDebug() << "Socket connected successfully...";
     //delete after disconnected
 }
@@ -63,7 +67,7 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
     //QTcpSocket *tcpSocket = (QTcpSocket*)sender();
     if (tcpSocket)
     {
-        //qDebug() << "start reading from user " + socketClientStatus[tcpSocket].getUserName();
+        //qDebug() << "start reading from user " + socketUserName[tcpSocket];
         QDataStream in;
         in.setVersion(QDataStream::Qt_4_0);
         in.setDevice(tcpSocket);
@@ -79,7 +83,8 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
         //qDebug() << "Read all OK!";
         if (readString != "")
         {
-            qDebug() << "#Receive message : " + readString + " from user " + socketClientStatus[tcpSocket].getUserName();
+            if (socketUserName.find(tcpSocket) != socketUserName.end())
+                qDebug() << "#Receive message : " + readString + " from user " + socketUserName[tcpSocket];
             //handle login session...
             if (readString.mid(0, 5) == "login") {
                 qDebug() << "Login command found...";
@@ -96,7 +101,7 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
                 {
                     //create user and update map
                     userNameSocket[userName] = tcpSocket;
-                    socketClientStatus[tcpSocket] = ClientStatus(userName);
+                    socketUserName[tcpSocket] = userName;
                     sendMessage(userName, "login ok");
                     //qDebug() << "Line 81";
                 }
@@ -105,9 +110,9 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
             {
                 //have logged in successfully, handle commands
                 std::vector<QString> afterSplit = spliter->split(readString);
-                QString userName = socketClientStatus[tcpSocket].getUserName();
+                QString userName = socketUserName[tcpSocket];
                 for (auto message : afterSplit)
-                mainHandler->tryHandle(userName, message);
+                    mainHandler->tryHandle(userName, message);
             }
         }
 
@@ -125,19 +130,66 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
 void ServerNetworkInterface::sendMessage(QString userName, QString message)
 {
     qDebug() << "Send message " + message + " to user " + userName;
+    /*
+    //assert(userNameSocket.find(userName) != userNameSocket.end());
+    qDebug() << "1";
+    //for (auto c : userNameSocket)
+    //    qDebug() << c.first << " " << c.second;
+    QTcpSocket *tcpSocket = userNameSocket[userName];
+    qDebug() << "2";
+    assert(socketClientStatus.find(tcpSocket) != socketClientStatus.end());
+    qDebug() << "2";
+    qDebug() << "pre sendString = " + socketClientStatus[tcpSocket].getNextSendString();
+    qDebug() << "3";
     socketClientStatus[userNameSocket[userName]].addSendString(message);
+    qDebug() << "4";
+    qDebug() << "end sendString = " + socketClientStatus[tcpSocket].getNextSendString();
+    */
+
+    QTcpSocket *tcpSocket = userNameSocket[userName];
+    startSend(tcpSocket, message);
+    qDebug() << "~Send message " << tcpSocket->bytesToWrite() << " bytes to write...";
+    if (tcpSocket->isWritable())
+        qDebug() << "writable";
+    else
+        qDebug() << "not writable";
+    if (tcpSocket->errorString() != "")
+        qDebug() << "Error: " << tcpSocket->errorString();
 }
 
-void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket)
+void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket, QString message)
 {
     //qDebug() << "start sending...";
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
-    ClientStatus &clientStatus = socketClientStatus[tcpSocket];
-    out << clientStatus.getNextSendString();
-    clientStatus.clearString();
+    if (message != "")
+    {
+        qDebug() << "case0";
+    }
+    out << message;
+    if (message != "")
+    {
+        qDebug() << "case1";
+        qDebug() << "~Send message " << tcpSocket->bytesToWrite() << " bytes to write...";
+        if (tcpSocket->isWritable())
+            qDebug() << "writable";
+        else
+            qDebug() << "not writable";
+        if (tcpSocket->errorString() != "")
+            qDebug() << "Error: " << tcpSocket->errorString();
+    }
     tcpSocket->write(block);
+    if (message != "")
+    {
+        qDebug() << "~Send message " << tcpSocket->bytesToWrite() << " bytes to write...";
+        if (tcpSocket->isWritable())
+            qDebug() << "writable";
+        else
+            qDebug() << "not writable";
+        if (tcpSocket->errorString() != "")
+            qDebug() << "Error: " << tcpSocket->errorString();
+    }
     startRead(tcpSocket);
 }
 
@@ -146,10 +198,31 @@ void ServerNetworkInterface::disconnected()
 
     //QTcpSocket *tcpSocket = qobject_cast<QTcpSocket*>(object);
     QTcpSocket *tcpSocket = (QTcpSocket*)sender();
-    QString userName = socketClientStatus[tcpSocket].getUserName();
+    QString userName = socketUserName[tcpSocket];
     qDebug() << "User " + userName + " disconnected from server.";
-    tcpSocket->deleteLater();
     //update map
     userNameSocket.erase(userNameSocket.find(userName));
-    socketClientStatus.erase(socketClientStatus.find(tcpSocket));
+    socketUserName.erase(socketUserName.find(tcpSocket));
+    tcpSocket->deleteLater();
+}
+
+void ServerNetworkInterface::displayError(QAbstractSocket::SocketError socketError)
+{
+    QTcpSocket *tcpSocket = (QTcpSocket*)sender();
+    switch (socketError)
+    {
+        case QAbstractSocket::RemoteHostClosedError:
+        {
+            break;
+        }
+        case QAbstractSocket::HostNotFoundError:
+        {
+            qDebug() << "Network Error: server was not found!";
+            break;
+        }
+        default:
+        {
+            qDebug() << tr("The following error occured : %1").arg(tcpSocket->errorString());
+        }
+    }
 }

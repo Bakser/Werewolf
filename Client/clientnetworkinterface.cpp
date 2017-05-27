@@ -25,29 +25,31 @@ ClientNetworkInterface::~ClientNetworkInterface()
 
 void ClientNetworkInterface::addString(QString s)
 {
+    /*
     if (sendString == "")
         sendString = s;
     else
         sendString += "$" + s;
+    */
+    startSend(s);
 }
 
 void ClientNetworkInterface::startLogin(QString userName)
 {
     qDebug() << "User " + userName + " start login...";
     tcpSocket->connectToHost("127.0.0.1", 6666);
-    addString("login " + userName);
-    startSend();
+    //addString("login " + userName);
+    startSend("login " + userName);
 }
 
-void ClientNetworkInterface::startSend()
+void ClientNetworkInterface::startSend(QString message)
 {
     //qDebug() << "start sending...";
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
-    out << sendString;
+    out << message;
     //qDebug() << "want to send to server: " + sendString;
-    sendString = "";
     tcpSocket->write(block);
     startRead();
 }

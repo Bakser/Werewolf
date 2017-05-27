@@ -11,6 +11,10 @@ Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInt
     users=_users;
     status=new Gamestatus(_users,setting,this);
 }
+void Game::sendMessage(QString username, QString message){
+    room->sendMessage(username,message);
+}
+
 bool Game::canHandle(QString message){
     return 1;
 }
@@ -151,6 +155,7 @@ QString Game::allvote(QString info,int msec){
     return status->vote(waitVote);
 }
 int Game::dayround(int rn){
+    qDebug() << "dayround #" << rn;
     room->broadcast(QString("Day ")+IntToStr(rn>>1));
     closeall();
     int tmp=deadclear(deadbuffer,rn==1);
@@ -195,12 +200,13 @@ int Game::dayround(int rn){
     if(tmp)return tmp;
 }
 int Game::nightround(int rn){
+    qDebug() << "nightround #" << rn;
     room->broadcast(QString("Night ")+IntToStr(rn>>1));
     reportall();
     closeall();
-    static std::map<QString,bool> guarded,killed,saved,poisoned;
+    std::map<QString,bool> guarded,killed,saved,poisoned;
     guarded.clear();killed.clear();saved.clear();poisoned.clear();
-    static QString tmp;
+    QString tmp;
     //守卫
     for(auto c:status->roleplayer[QString("defender")])
         if(status->alive[c->username]){
@@ -222,7 +228,7 @@ int Game::nightround(int rn){
     if(tmp[0]!='@')
         killed[tmp]=1;
     //女巫
-    static QString killd=tmp;
+    QString killd=tmp;
     for(auto c:status->roleplayer[QString("witch")])
         if(status->alive[c->username]){
             if(!status->used1[c->username]){

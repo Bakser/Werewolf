@@ -34,6 +34,16 @@ void ServerCenter::handle(QString username,QString message){
         for(auto i:Rooms)
             i.second->broadcast(message);
     }
+    /*
+    if (message == "join 1"){
+        while(1)
+        sendMessage(username, "Status\nSB werewolf 1 0\nSB 1 0\n");
+       }
+    if (message == "build 1\n1 1 1 1 1 1 1")
+        sendMessage(username, "case1kfghgkjlehfljeskrghkjdghdskg\njhfkrejgheks\njdghdsfkjgs\nhfkgjdsghskdjghdssdkjfhdskgjds\nhgjksdghksjghdskgjhe\nrakgjehgkjdghdzjkgh");
+    if (message == "startgame 1")
+        sendMessage(username, "case2");
+    */
 }
 EventHandler* ServerCenter::selectHandler(QString message){
     return this->Rooms[parseToInt(message)];

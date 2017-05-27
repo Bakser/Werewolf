@@ -82,6 +82,7 @@ void RoomHandler::buildroom(QString str){
         setting.push_back(tmp);
 }
 void RoomHandler::handle(QString username,QString message){
+    this->broadcast(QString("room handler handle:Gamestarted"));
     if(message[0]=='j')
         EnterRoom(username);
     else if(message[0]=='l')
@@ -108,6 +109,7 @@ void RoomHandler::handle(QString username,QString message){
 }
 void RoomHandler::startgame(){
     gamestarted=1;
+    this->broadcast(QString("Gamestarted"));
     game=new Game(users,setting,networkInterface,this);//传递应该有的信息
     this->broadcast(QString("Gamestarted"));
     game->run();//TODO

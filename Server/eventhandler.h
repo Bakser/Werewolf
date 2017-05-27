@@ -15,10 +15,11 @@ public:
     EventHandler(ServerNetworkInterface*);
     void tryHandle(QString userName, QString message);
     void setNetworkInterface(ServerNetworkInterface*);
+    void sendMessage(QString,QString);
 protected:
     ServerNetworkInterface *networkInterface;
     int parseToInt(QString);
-    void sendMessage(QString, QString);
+    //void sendMessage(QString, QString);
 private:
     virtual bool canHandle(QString) = 0;
     virtual void handle(QString, QString) = 0;

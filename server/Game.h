@@ -31,6 +31,7 @@ class Game: public EventHandler{
         int nightround(int);
         QString allvote(QString,int);
     public:
+        void sendMessage(QString,QString);
         Game(std::vector<QString>,std::vector<int>,ServerNetworkInterface*,RoomHandler*);
         QString askforonevote(QString,QString,int);//user info
         bool askforonemessage(QString,QString,QString,int);//username channel info

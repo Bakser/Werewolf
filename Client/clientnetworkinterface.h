@@ -26,7 +26,7 @@ public slots:
 private:
     QTcpSocket *tcpSocket;
     QString sendString;
-    void startSend();
+    void startSend(QString = "");
     Spliter *spliter;
 };
 
