@@ -5,14 +5,17 @@ RoomHandler::RoomHandler(ServerNetworkInterface* _networkInterface){
     gamestarted=0;
 }
 bool RoomHandler::canHandle(QString message){
+    qDebug()<<"RoomMLGBD";
     return message[0]=='j'||message[0]=='b'||message[0]=='l'||message[0]=='h'||message[0]=='s'||message[0]=='r';
 }
 EventHandler* RoomHandler::selectHandler(QString message){
+    qDebug()<<"SelectMLGBD";
     if(!gamestarted)
-        std::cerr<<"Yao Shou La"<<std::endl;
+        qDebug()<<"Yao Shou la";
     return game;
 }
 bool RoomHandler::EnterRoom(QString username){
+    qDebug()<<"Entered";
     if(!users.size()){
         owner=username;
         sendMessage(username,QString("Owner"));
@@ -101,6 +104,7 @@ void RoomHandler::handle(QString username,QString message){
     else if(message[0]=='s')
         startgame();
     this->flush();
+
 }
 void RoomHandler::startgame(){
     gamestarted=1;

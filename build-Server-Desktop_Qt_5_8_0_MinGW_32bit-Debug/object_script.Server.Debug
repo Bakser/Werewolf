@@ -12,5 +12,6 @@ INPUT(
 ./debug\Game.o
 ./debug\moc_maindialog.o
 ./debug\moc_servernetworkinterface.o
+./debug\moc_eventhandler.o
 ./debug\moc_Game.o
 );

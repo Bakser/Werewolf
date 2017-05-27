@@ -12,5 +12,6 @@ INPUT(
 ./release\Game.o
 ./release\moc_maindialog.o
 ./release\moc_servernetworkinterface.o
+./release\moc_eventhandler.o
 ./release\moc_Game.o
 );

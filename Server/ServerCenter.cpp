@@ -16,14 +16,16 @@ ServerCenter::ServerCenter(ServerNetworkInterface* _networkInterface){
     this->networkInterface=_networkInterface;
 }
 bool ServerCenter::canHandle(QString message){
-    std::cout<<"MLGBD"<<std::endl;
+    qDebug()<<"MLGBD"<<message;
     return message[0]=='j'||(message[0]=='w'&&message[2]=='r');
 }
 void ServerCenter::handle(QString username,QString message){
     if(message[0]=='j'){
         int roomnumber=parseToInt(message);
-        if(this->Rooms.count(roomnumber))
+        qDebug()<<roomnumber;
+        if(!this->Rooms.count(roomnumber))
             this->Rooms[roomnumber]=new RoomHandler(this->networkInterface);//TODO
+        qDebug()<<"To Enter"<<this->Rooms[roomnumber];
         this->Rooms[roomnumber]->tryHandle(username,message);
     }
     else if(message[0]=='w'&&message[2]=='r'){

@@ -12,6 +12,7 @@ EventHandler::EventHandler(ServerNetworkInterface *_networkInterface)
 
 void EventHandler::tryHandle(QString userName, QString message)
 {
+    qDebug()<<"TryHandle "<<this;
     if (canHandle(message))
         handle(userName, message);
     else
@@ -27,11 +28,11 @@ void EventHandler::setNetworkInterface(ServerNetworkInterface* _networkInterface
 }
 int EventHandler::parseToInt(QString message){
     bool flag=0;
-    int res=1;
+    int res=0;
     for(auto c:message)
         if(c==' ')flag=1;
         else if(c=='\n')return res;
         else if (flag)
-            res=res*(c.unicode()-'0');
+            res=res*10+(c.toLatin1()-'0');
     return res;
 }
