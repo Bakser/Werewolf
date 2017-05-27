@@ -109,7 +109,7 @@ void RoomHandler::handle(QString username,QString message){
 }
 void RoomHandler::startgame(){
     gamestarted=1;
-    this->broadcast(QString("Gamestarted"));
+    //this->broadcast(QString("Gamestarted"));
     game=new Game(users,setting,networkInterface,this);//传递应该有的信息
     this->broadcast(QString("Gamestarted"));
     game->run();//TODO

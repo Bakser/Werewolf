@@ -11,8 +11,10 @@ Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInt
     users=_users;
     status=new Gamestatus(_users,setting,this);
 }
+
 void Game::sendMessage(QString username, QString message){
-    room->sendMessage(username,message);
+    //room->sendMessage(username,message);
+    networkInterface->sendMessage(username, message);
 }
 
 bool Game::canHandle(QString message){
