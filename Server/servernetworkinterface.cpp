@@ -74,40 +74,41 @@ void ServerNetworkInterface::startRead(QTcpSocket* tcpSocket)
         if (!in.commitTransaction())
         {
             //qDebug() << "Not complete!";
-            //startSend(tcpSocket);
             return;
         }
         //qDebug() << "Read all OK!";
         if (readString != "")
-            qDebug() << "#Receive message : " + readString + " from client.";
-        //handle login session...
-        if (readString.mid(0, 5) == "login") {
-            qDebug() << "Login command found...";
-            QString userName = readString.mid(6, readString.length() - 6);
-            //collison check
-            if (userNameSocket.find(userName) != userNameSocket.end())
-            {
-                qDebug() << "Same username has existed!";
-                //collide!
-                //for now, just disconnect at once
-                tcpSocket->disconnectFromHost();
+        {
+            qDebug() << "#Receive message : " + readString + " from user " + socketClientStatus[tcpSocket].getUserName();
+            //handle login session...
+            if (readString.mid(0, 5) == "login") {
+                qDebug() << "Login command found...";
+                QString userName = readString.mid(6, readString.length() - 6);
+                //collison check
+                if (userNameSocket.find(userName) != userNameSocket.end())
+                {
+                    qDebug() << "Same username has existed!";
+                    //collide!
+                    //for now, just disconnect at once
+                    tcpSocket->disconnectFromHost();
+                }
+                else
+                {
+                    //create user and update map
+                    userNameSocket[userName] = tcpSocket;
+                    socketClientStatus[tcpSocket] = ClientStatus(userName);
+                    sendMessage(userName, "login ok");
+                    //qDebug() << "Line 81";
+                }
             }
             else
             {
-                //create user and update map
-                userNameSocket[userName] = tcpSocket;
-                socketClientStatus[tcpSocket] = ClientStatus(userName);
-                sendMessage(userName, "login ok");
-                //qDebug() << "Line 81";
-            }
-        }
-        else
-        {
-            //have logged in successfully, handle commands
-            std::vector<QString> afterSplit = spliter->split(readString);
-            QString userName = socketClientStatus[tcpSocket].getUserName();
-            for (auto message : afterSplit)
+                //have logged in successfully, handle commands
+                std::vector<QString> afterSplit = spliter->split(readString);
+                QString userName = socketClientStatus[tcpSocket].getUserName();
+                for (auto message : afterSplit)
                 mainHandler->tryHandle(userName, message);
+            }
         }
 
         //complete reading, start writing

@@ -16,6 +16,7 @@ ServerCenter::ServerCenter(ServerNetworkInterface* _networkInterface){
     this->networkInterface=_networkInterface;
 }
 bool ServerCenter::canHandle(QString message){
+    std::cout<<"MLGBD"<<std::endl;
     return message[0]=='j'||(message[0]=='w'&&message[2]=='r');
 }
 void ServerCenter::handle(QString username,QString message){

@@ -68,6 +68,7 @@ Window {
                 else {
                     clientNetworkInterface.addString(sayField.text);
                     sayField.text = ""
+                }
             }
         }
     }
