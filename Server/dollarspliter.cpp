@@ -5,7 +5,7 @@ std::vector<QString> DollarSpliter::split(QString s)
 {
     std::vector<QString> ans;
     int last = 0, next;
-    while ((next = s.indexOf(QRegExp("$"), last)) != -1) {
+    while ((next = s.indexOf("$", last)) != -1) {
         ans.push_back(s.mid(last, next - last));
         last = next + 1;
     }

@@ -42,6 +42,7 @@ void Game::set(QString username,bool vote,bool say,QString channel=QString("Room
     sendMessage(username,QString("Set\n")+(vote?QString("1 "):QString("0 "))+(say?QString("1 "):QString("0 "))+channel);
 }
 void Game::report(QString username){
+    qDebug()<<"report started";
     sendMessage(username,QString("Status\n")+status->showonestatus(username)+status->showalivestatus());
     qDebug()<<"report "<<username<<"Ended";
 }
