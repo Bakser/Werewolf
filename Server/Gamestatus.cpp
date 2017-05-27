@@ -54,6 +54,7 @@ QString Gamestatus::showonestatus(QString name){
 }
 QString Gamestatus::showalivestatus(){
     QString res;
+    qDebug()<<"ShowAlive";
     for(auto c:playerid)
         res+=c+(alive[c]?QString(" 1"):QString(" 0"))+(cap[c]?QString(" 1\n"):QString(" 0\n"));
     return res;

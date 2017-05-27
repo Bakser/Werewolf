@@ -38,12 +38,15 @@ bool Game::judgewait(){
     return 1;
 }
 void Game::set(QString username,bool vote,bool say,QString channel=QString("Room")){
+    qDebug()<<"Set";
     sendMessage(username,QString("Set\n")+(vote?QString("1 "):QString("0 "))+(say?QString("1 "):QString("0 "))+channel);
 }
 void Game::report(QString username){
     sendMessage(username,QString("Status\n")+status->showonestatus(username)+status->showalivestatus());
+    qDebug()<<"report "<<username<<"Ended";
 }
 void Game::reportall(){
+    qDebug()<<"reportall";
     for(auto c:status->playerid)
         report(c);
 }
@@ -95,6 +98,7 @@ bool Game::askforonemessage(QString username,QString channel,QString info,int ms
     return 1;
 }
 void Game::closeall(){
+    qDebug()<<"closeall "<<users.size();
     for(auto c:users)
         set(c,0,0);
 }

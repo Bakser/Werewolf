@@ -17,9 +17,11 @@ ServerCenter::ServerCenter(ServerNetworkInterface* _networkInterface){
 }
 bool ServerCenter::canHandle(QString message){
     qDebug()<<"MLGBD"<<message;
+    if(!message.length())return 1;
     return message[0]=='j'||(message[0]=='w'&&message[2]=='r');
 }
 void ServerCenter::handle(QString username,QString message){
+    if(!message.length())return;
     if(message[0]=='j'){
         int roomnumber=parseToInt(message);
         qDebug()<<roomnumber;

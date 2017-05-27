@@ -6,7 +6,7 @@ RoomHandler::RoomHandler(ServerNetworkInterface* _networkInterface){
 }
 bool RoomHandler::canHandle(QString message){
     qDebug()<<"RoomMLGBD";
-    return message[0]=='j'||message[0]=='b'||message[0]=='l'||message[0]=='h'||message[0]=='s'||message[0]=='r';
+    return message[0]=='j'||message[0]=='b'||message[0]=='l'||message[0]=='u'||message[0]=='d'||message[0]=='s'||message[0]=='r';
 }
 EventHandler* RoomHandler::selectHandler(QString message){
     qDebug()<<"SelectMLGBD";
@@ -103,8 +103,8 @@ void RoomHandler::handle(QString username,QString message){
     }
     else if(message[0]=='s')
         startgame();
-    this->flush();
-
+    if(setting.size())
+           this->flush();
 }
 void RoomHandler::startgame(){
     gamestarted=1;
