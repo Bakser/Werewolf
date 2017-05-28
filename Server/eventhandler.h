@@ -24,6 +24,7 @@ private:
     virtual bool canHandle(QString) = 0;
     virtual void handle(QString, QString) = 0;
     virtual EventHandler* selectHandler(QString) = 0;
+
 };
 
 #endif // EVENTHANDLER_H

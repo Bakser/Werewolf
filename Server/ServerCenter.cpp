@@ -56,7 +56,9 @@ QString nameform(QString x){
     return QString("@")+x+QString("\n");
 }
 
+/*
 void ServerCenter::sendMessage(QString username, QString message)
 {
     networkInterface->sendMessage(username, message);
 }
+*/

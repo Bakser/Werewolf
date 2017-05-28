@@ -32,9 +32,10 @@ class ServerCenter:public EventHandler{
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);
         virtual void handle(QString,QString);
+        //ServerNetworkInterface *networkInterface;
     public:
         ServerCenter()=default;
         ServerCenter(ServerNetworkInterface*);
-        void sendMessage(QString, QString);
+        //void sendMessage(QString, QString);
 };
 #endif

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <qtimer.h>
 #include <qeventloop.h>
+const int DebugMulti=10;
 Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInterface* _networkInterface,RoomHandler* _room){
     networkInterface=_networkInterface;
     room=_room;
@@ -12,16 +13,18 @@ Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInt
     status=new Gamestatus(_users,setting,this);
 }
 
+/*
 void Game::sendMessage(QString username, QString message){
     //room->sendMessage(username,message);
     networkInterface->sendMessage(username, message);
 }
+*/
 
 bool Game::canHandle(QString message){
     return 1;
 }
 EventHandler* Game::selectHandler(QString message){
-    std::cerr<<"Yao Shou La"<<std::endl;
+    qDebug()<<"Yao Shou La";
     return this;
 }
 bool Game::judgewait(){
@@ -31,40 +34,35 @@ bool Game::judgewait(){
     for(auto i:waitMessage)
         if(!i->said)
             return 0;
-    for(auto i:waitSpecial)
-        if(!i->special)
-            return 0;
     for(auto i:waitVote)
         i->voted=0;
     for(auto i:waitMessage)
         i->said=0;
-    for(auto i:waitSpecial)
-        i->special=0;
     //waitVote=waitMessage=waitSpecial=std::vector<Player*>();
     return 1;
 }
 void Game::set(QString username,bool vote,bool say,QString channel=QString("Room")){
-    qDebug()<<"Set";
     sendMessage(username,QString("Set\n")+(vote?QString("1 "):QString("0 "))+(say?QString("1 "):QString("0 "))+channel);
 }
 void Game::report(QString username){
-    qDebug()<<"report started";
     sendMessage(username,QString("Status\n")+status->showonestatus(username)+status->showalivestatus());
-    qDebug()<<"report "<<username<<"Ended";
 }
 void Game::reportall(){
-    qDebug()<<"reportall";
     for(auto c:status->playerid)
         report(c);
 }
 void Game::startAwaitsession(int msec){
+    msec*=DebugMulti;
     QTimer *timer = new QTimer(this);
     timer->setInterval(msec);
     QEventLoop *loop = new QEventLoop(this);
     timer->start();
     connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
     connect(this, SIGNAL(receiveOK()), loop, SLOT(quit()));
+    qDebug() << "connect loop-end signal successfully";
     loop->exec();
+    delete timer;
+    delete loop;
 }
 void Game::broadcast(QString type,QString message,bool f=0){
     if(type==QString("Allalive")){
@@ -209,6 +207,7 @@ int Game::nightround(int rn){
     std::map<QString,bool> guarded,killed,saved,poisoned;
     guarded.clear();killed.clear();saved.clear();poisoned.clear();
     QString tmp;
+    qDebug()<<"Night started";
     //守卫
     for(auto c:status->roleplayer[QString("defender")])
         if(status->alive[c->username]){
@@ -216,6 +215,7 @@ int Game::nightround(int rn){
             if(tmp.length())
                 guarded[tmp]=1;
         }
+    qDebug()<<"Guarded";
     //狼人
     waitVote=waitMessage=std::vector<Player*>();
     for(auto c:status->roleplayer[QString("werewolf")])
@@ -229,6 +229,7 @@ int Game::nightround(int rn){
     tmp=status->vote(waitVote);
     if(tmp[0]!='@')
         killed[tmp]=1;
+    qDebug()<<"Wolfed";
     //女巫
     QString killd=tmp;
     for(auto c:status->roleplayer[QString("witch")])
@@ -244,6 +245,7 @@ int Game::nightround(int rn){
                     poisoned[tmp]=1,status->used2[c->username]=1;
             }
         }
+    qDebug()<<"Witched";
     //预言家
     for(auto c:status->roleplayer[QString("prophet")])
         if(status->alive[c->username]){
@@ -251,6 +253,7 @@ int Game::nightround(int rn){
             if(tmp.length())
                 sendMessage(c->username,(status->role[tmp]==QString("werewolf")?QString("Bad"):QString("Good")));
         }
+    qDebug()<<"Propheted";
     for(auto c:users)
         if((killed[c]&&(int(guarded[c])+int(saved[c])!=1))||poisoned[c])
             deadbuffer.push_back(c),poied[c]=1;

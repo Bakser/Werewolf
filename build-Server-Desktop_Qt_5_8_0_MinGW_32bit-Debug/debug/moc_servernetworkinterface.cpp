@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ServerNetworkInterface_t {
-    QByteArrayData data[5];
-    char stringdata0[64];
+    QByteArrayData data[7];
+    char stringdata0[106];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,11 +35,14 @@ QT_MOC_LITERAL(0, 0, 22), // "ServerNetworkInterface"
 QT_MOC_LITERAL(1, 23, 9), // "startRead"
 QT_MOC_LITERAL(2, 33, 0), // ""
 QT_MOC_LITERAL(3, 34, 16), // "handleConnection"
-QT_MOC_LITERAL(4, 51, 12) // "disconnected"
+QT_MOC_LITERAL(4, 51, 12), // "disconnected"
+QT_MOC_LITERAL(5, 64, 12), // "displayError"
+QT_MOC_LITERAL(6, 77, 28) // "QAbstractSocket::SocketError"
 
     },
     "ServerNetworkInterface\0startRead\0\0"
-    "handleConnection\0disconnected"
+    "handleConnection\0disconnected\0"
+    "displayError\0QAbstractSocket::SocketError"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,7 +52,7 @@ static const uint qt_meta_data_ServerNetworkInterface[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -57,14 +60,16 @@ static const uint qt_meta_data_ServerNetworkInterface[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x08 /* Private */,
-       3,    0,   30,    2, 0x08 /* Private */,
-       4,    0,   31,    2, 0x08 /* Private */,
+       1,    0,   34,    2, 0x08 /* Private */,
+       3,    0,   35,    2, 0x08 /* Private */,
+       4,    0,   36,    2, 0x08 /* Private */,
+       5,    1,   37,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 6,    2,
 
        0        // eod
 };
@@ -78,10 +83,21 @@ void ServerNetworkInterface::qt_static_metacall(QObject *_o, QMetaObject::Call _
         case 0: _t->startRead(); break;
         case 1: _t->handleConnection(); break;
         case 2: _t->disconnected(); break;
+        case 3: _t->displayError((*reinterpret_cast< QAbstractSocket::SocketError(*)>(_a[1]))); break;
         default: ;
         }
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 3:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAbstractSocket::SocketError >(); break;
+            }
+            break;
+        }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObject ServerNetworkInterface::staticMetaObject = {
@@ -109,13 +125,13 @@ int ServerNetworkInterface::qt_metacall(QMetaObject::Call _c, int _id, void **_a
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
-            *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        if (_id < 4)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 4;
     }
     return _id;
 }
