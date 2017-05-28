@@ -48,5 +48,6 @@ class RoomHandler:public EventHandler{
         void broadcast(QString);
         RoomHandler();
         RoomHandler(ServerNetworkInterface*);
+        void sendMessage(QString, QString);
 };
 #endif

@@ -35,5 +35,6 @@ class ServerCenter:public EventHandler{
     public:
         ServerCenter()=default;
         ServerCenter(ServerNetworkInterface*);
+        void sendMessage(QString, QString);
 };
 #endif

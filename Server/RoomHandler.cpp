@@ -115,3 +115,8 @@ void RoomHandler::startgame(){
     game->run();//TODO
     delete game;
 }
+
+void RoomHandler::sendMessage(QString username, QString message)
+{
+    networkInterface->sendMessage(username, message);
+}

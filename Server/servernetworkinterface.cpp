@@ -148,6 +148,7 @@ void ServerNetworkInterface::sendMessage(QString userName, QString message)
 
     QTcpSocket *tcpSocket = userNameSocket[userName];
     startSend(tcpSocket, message);
+    /*
     qDebug() << "~Send message " << tcpSocket->bytesToWrite() << " bytes to write...";
     if (tcpSocket->isWritable())
         qDebug() << "writable";
@@ -155,6 +156,7 @@ void ServerNetworkInterface::sendMessage(QString userName, QString message)
         qDebug() << "not writable";
     if (tcpSocket->errorString() != "")
         qDebug() << "Error: " << tcpSocket->errorString();
+    */
 }
 
 void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket, QString message)
@@ -163,11 +165,14 @@ void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket, QString message)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
+    /*
     if (message != "")
     {
         qDebug() << "case0";
     }
+    */
     out << message;
+    /*
     if (message != "")
     {
         qDebug() << "case1";
@@ -179,7 +184,9 @@ void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket, QString message)
         if (tcpSocket->errorString() != "")
             qDebug() << "Error: " << tcpSocket->errorString();
     }
+    */
     tcpSocket->write(block);
+    /*
     if (message != "")
     {
         qDebug() << "~Send message " << tcpSocket->bytesToWrite() << " bytes to write...";
@@ -190,6 +197,7 @@ void ServerNetworkInterface::startSend(QTcpSocket *tcpSocket, QString message)
         if (tcpSocket->errorString() != "")
             qDebug() << "Error: " << tcpSocket->errorString();
     }
+    */
     startRead(tcpSocket);
 }
 
