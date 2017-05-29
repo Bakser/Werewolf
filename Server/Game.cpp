@@ -23,6 +23,7 @@ void Game::sendMessage(QString username, QString message){
 }
 */
 bool Game::canHandle(QString message){
+    //qDebug()<<"Game can handle "<<message;
     return 1;
 }
 EventHandler* Game::selectHandler(QString message){
@@ -79,6 +80,7 @@ void Game::broadcast(QString type,QString message,bool f=0){
             sendMessage(c,message);
 }
 void Game::handle(QString username,QString message){
+    //qDebug()<<"Game Handle";
     if(message[0]=='w'&&message[4]=='c')
         broadcast(QString("werewolf"),message,1);
     status->player[username]->handle(message);
@@ -88,7 +90,7 @@ void Game::handle(QString username,QString message){
         if(capflag)solvecap();
         if(!waitq.empty())solveq();
         if(!capflag&&!hunterflag&&waitq.empty()){
-            stage+=2;
+            if(!voteflag)stage+=2;
             run();
         }
     }
@@ -105,6 +107,7 @@ void Game::askforonevote(QString username,QString info,int msec=10000){//这里�
 }
 QString Game::resforonevote(QString username){
     set(username,0,0);
+    waitVote=std::vector<Player*>();
     return status->player[username]->lastvote;
 }
 bool Game::askforonemessage(QString username,QString channel,QString info,int msec=10000){
@@ -210,6 +213,7 @@ QString Game::resforallvote(){
 }
 //spflag 1-hunter 2-capdie 3-choose cap 4-equal
 int Game::dayround(int rn){
+    qDebug()<<"Daystage "<<stage;
     srand(time(0));
     int order=rand()&1,s=0,n=users.size();
     QString cap("");
@@ -221,10 +225,12 @@ int Game::dayround(int rn){
         deadbuffer.clear();
         if(tmp)return tmp;
         if(rn==1){
+            room->broadcast(QString("TalkCaptain"));
             while(!waitq.empty())waitq.pop();
             for(int i(0);i<n;i++)
                 waitq.push(users[i]);
             solveq();
+            return 0;
         }
         return 0;
     }
@@ -237,6 +243,7 @@ int Game::dayround(int rn){
         if(rn==1&&voteflag){
             voteflag=0;
             QString t=resforallvote();
+            qDebug()<<"Vote cap "<<t;
             if(t[0]=='@')
                 t=QString("");
             else status->changecap(t);
@@ -247,9 +254,15 @@ int Game::dayround(int rn){
                 cap=c;
                 askforonevote(c,"Order");
             }
+        //如果警长死了怎么进入下一轮
+        if(!cap.length()){
+            stage=5;
+            goto label;
+        }
         return 0;
     }
     if(stage==5){
+        label:
         for(auto c:users)
             if(status->alive[c]&&status->cap[c])
                 cap=c;
@@ -278,6 +291,7 @@ int Game::dayround(int rn){
         if(voteflag){
             voteflag=0;
             QString t=resforallvote();
+            qDebug()<<"Vote die "<<t;
             if(t[0]=='@'){
                 broadcast("Allalive",QString("Equal\n")+t);
                 voteflag=1;
@@ -290,13 +304,14 @@ int Game::dayround(int rn){
     }
     if(stage==9){
         int tmp=deadclr(deadbuffer,1);
-        stage=0;
+        stage=-2;
         round++;
         if(tmp)return tmp;
         return 0;
     }
 }
 int Game::nightround(int rn){
+    qDebug()<<"Nightstage "<<stage;
     static std::map<QString,bool> guarded,killed,saved,poisoned;
     //guarded.clear();killed.clear();saved.clear();poisoned.clear();
     if(stage==0){
@@ -317,6 +332,7 @@ int Game::nightround(int rn){
         for(auto c:status->roleplayer[QString("defender")])
             if(status->alive[c->username]){
                 QString tmp=resforonevote(c->username);
+                qDebug()<<"Guard "<<tmp;
                 if(tmp.length())
                     guarded[tmp]=1;
             }
@@ -334,6 +350,7 @@ int Game::nightround(int rn){
         for(auto c:waitVote)
             set(c->username,0,0);
         QString tmp=status->vote(waitVote);
+        qDebug()<<"Wolfkill "<<tmp;
         if(tmp[0]!='@')
             killed[tmp]=1;
         else tmp=QString("");
@@ -348,6 +365,7 @@ int Game::nightround(int rn){
         for(auto c:status->roleplayer[QString("witch")])
             if(status->alive[c->username]&&!status->used1[c->username]){
                 QString tmp=resforonevote(c->username);
+                qDebug()<<"Witch save "<<tmp;
                 if(tmp.length())
                     saved[tmp]=1,status->used1[c->username]=1;
             }
@@ -361,6 +379,7 @@ int Game::nightround(int rn){
        for(auto c:status->roleplayer[QString("witch")])
            if(status->alive[c->username]&&!status->used2[c->username]){
                QString tmp=resforonevote(c->username);
+               qDebug()<<"Witch poi "<<tmp;
                if(tmp.length())
                    poisoned[tmp]=1,status->used2[c->username]=1;
            }
@@ -374,6 +393,7 @@ int Game::nightround(int rn){
         for(auto c:status->roleplayer[QString("prophet")])
             if(status->alive[c->username]){
                 QString tmp=resforonevote(c->username);
+                qDebug()<<"Prophet verify "<<tmp;
                 if(tmp.length())
                     sendMessage(c->username,((status->role[tmp]==QString("werewolf"))?QString("Bad"):QString("Good")));
             }
@@ -381,7 +401,7 @@ int Game::nightround(int rn){
         for(auto c:users)
             if((killed[c]&&(int(guarded[c])+int(saved[c])!=1))||poisoned[c])
                 deadbuffer.push_back(c),poied[c]=poisoned[c];
-        stage=1;
+        stage=-1;
         round++;
         guarded.clear();killed.clear();saved.clear();poisoned.clear();
         return 0;

@@ -12,7 +12,7 @@ EventHandler::EventHandler(ServerNetworkInterface *_networkInterface)
 
 void EventHandler::tryHandle(QString userName, QString message)
 {
-    qDebug()<<"TryHandle "<<this;
+    //qDebug()<<"TryHandle "<<this;
     if (canHandle(message))
         handle(userName, message);
     else

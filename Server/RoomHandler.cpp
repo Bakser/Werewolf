@@ -5,13 +5,14 @@ RoomHandler::RoomHandler(ServerNetworkInterface* _networkInterface){
     gamestarted=0;
 }
 bool RoomHandler::canHandle(QString message){
-    qDebug()<<"RoomMLGBD";
+    //qDebug()<<"Room canHandle";
     return message[0]=='j'||message[0]=='b'||message[0]=='l'||message[0]=='u'||message[0]=='d'||message[0]=='s'||message[0]=='r';
 }
 EventHandler* RoomHandler::selectHandler(QString message){
-    qDebug()<<"SelectMLGBD";
+    //qDebug()<<"RoomSelect";
     if(!gamestarted)
         qDebug()<<"Yao Shou la";
+    qDebug()<<"Choose Game "<<game;
     return game;
 }
 bool RoomHandler::EnterRoom(QString username){
@@ -82,7 +83,7 @@ void RoomHandler::buildroom(QString str){
         setting.push_back(tmp);
 }
 void RoomHandler::handle(QString username,QString message){
-    this->broadcast(QString("room handler handle:Gamestarted"));
+    //this->broadcast(QString("room handler handle:Gamestarted"));
     if(message[0]=='j')
         EnterRoom(username);
     else if(message[0]=='l')
@@ -111,9 +112,10 @@ void RoomHandler::startgame(){
     gamestarted=1;
     //this->broadcast(QString("Gamestarted"));
     game=new Game(users,setting,networkInterface,this);//传递应该有的信息
+    qDebug()<<"Game pointer: "<<game;
     this->broadcast(QString("Gamestarted"));
     game->run();//TODO
-    delete game;
+    //delete game;
 }
 
 /*

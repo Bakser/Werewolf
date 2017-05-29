@@ -7,16 +7,16 @@ Player::Player(QString _username,QString _role){
     said=voted=0;
 }
 void Player::handle(QString message){
-    static QRegExp sep("*");
+    qDebug()<<"Ha "<<message;
     if(message[4]=='c')said=1; //worldchat已经被过滤
     else if(message[0]=='v'){
         voted=1;
         int s=0,t=message.length();
         for(int i(0);i<message.length();i++)
             if(message[i]=='@')s=i+1;
-            else if(message[i]=='\n')t=i;
+            else if((message[i]=='\n'||message[i]==' ')&&s)t=i;
         if(s>=t)lastvote=QString("");
-        else lastvote=message.section(sep,s,t);
+        else lastvote=message.mid(s,t-s);
     }
     else special=1;//保证不是别的
 }
