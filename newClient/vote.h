@@ -18,7 +18,6 @@ class vote : public QDialog
 public:
     explicit vote(QWidget *parent = 0);
     ~vote();
-    QPushButton *button[5][2];
     QString choose;
 
 
