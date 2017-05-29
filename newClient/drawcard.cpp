@@ -7,6 +7,7 @@
 #include <qpixmap.h>
 #include <QLabel>
 #include "night.h"
+#include "mainwindowplay.h"
 
 drawcard::drawcard(QWidget *parent) :
     QDialog(parent),
@@ -22,47 +23,47 @@ drawcard::~drawcard()
 }
 
 
+
 void drawcard::on_pushButton_clicked()
 {
     QPixmap pix;
     //获取身份牌信息
     //根据身份给id赋值
-    int idk=3;
-    switch(idk)
+    switch(Globals::merole)
     {
     case 0://villager=0
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_villager.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_villager.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
     case 1://foresee=1
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_foresee.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_foresee.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
     case 2://witch=2
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_witch.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_witch.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
     case 3://wolf=3
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_wolf.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_wolf.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
     case 4://hunter=4
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_hunter.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_hunter.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
     case 5://guard=5
     {
-        this->setStyleSheet("background-image:url(/Users/flyingturtle/Wolf_2/UI/_guard.jpg)");
+        this->setStyleSheet("background-image:url(:new/prefix1/UI/_guard.jpg)");
         ui->commandLinkButton->setVisible(true);
         break;
     }
@@ -72,8 +73,7 @@ void drawcard::on_pushButton_clicked()
 
 void drawcard::on_commandLinkButton_clicked()
 {
-    night *n=new night;
+    MainWindowplay *p=new MainWindowplay;
     this->close();
-    n->show();
-    n->exec();
+    p->show();
 }

@@ -17,6 +17,8 @@ waitroom::waitroom(QWidget *parent) :
     ui->setupUi(this);
     ui->label_2->setVisible(false);
     ui->label_3->setVisible(false);
+    //正式版改成true
+    //ui->pushButton_3->setVisible(false);
 }
 
 waitroom::~waitroom()
@@ -63,4 +65,9 @@ void waitroom::on_pushButton_3_clicked()
     this->close();
     n->show();
     n->exec();
+}
+
+void waitroom::start()
+{
+    ui->pushButton_3->setVisible(true);
 }

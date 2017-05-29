@@ -47,13 +47,13 @@ void night::setWitch()
     ui->label->setScaledContents(true);
 }
 
-void night::setFore()
+void night::setFore()//预言家
 {
     ui->label->setPixmap(QPixmap(":new/prefix1/UI/_foresee.jpg"));
     ui->label->setScaledContents(true);
 }
 
-void night::setCap()
+void night::setCap()//警长
 {
     ui->label->setPixmap(QPixmap(":new/prefix1/UI/_sheriff.jpg"));
     ui->label->setScaledContents(true);

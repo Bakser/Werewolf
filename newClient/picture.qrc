@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>UI/_foresee.jpg</file>
+        <file>UI/_guard.jpg</file>
+        <file>UI/_hunter.jpg</file>
+        <file>UI/_villager.jpg</file>
+        <file>UI/_witch.jpg</file>
+        <file>UI/_wolf.jpg</file>
+        <file>UI/background.jpeg</file>
+        <file>UI/icon.jpg</file>
+        <file>UI/main.jpg</file>
+        <file>UI/lose.jpg</file>
+        <file>UI/_sheriff.jpg</file>
+        <file>UI/day.jpg</file>
+        <file>UI/win.jpg</file>
+    </qresource>
+</RCC>

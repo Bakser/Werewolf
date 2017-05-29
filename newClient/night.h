@@ -14,11 +14,22 @@ class night : public QDialog
 public:
     explicit night(QWidget *parent = 0);
     ~night();
-    void operate();
+
+public slots:
+    void setNight(int day);
+    void setDay(int day);
+    void setGuard();
+    void setWitch();
+    void setFore();
+    void setCap();
+    void setDie();
+    void setWin();
+    void setCapPass();
+    void setHunter();
+
 
 private:
     Ui::night *ui;
-    int _id;
 };
 
 #endif // NIGHT_H

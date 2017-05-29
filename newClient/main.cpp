@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QSplashScreen>
 #include <QThread>
+#include "handle1.cpp"
 //#include <clientnetworkinterface.h>
 
 
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
     enum _identity{VILLAGER,WOLF,HUNTER,GUARD,WITCH,FORESEE};
     //ClientNetworkInterface *clientNetworkInterface = new clientNetworkInterface();
     QApplication a(argc, argv);
-    QSplashScreen ss(QPixmap("/Users/flyingturtle/Wolf_2/UI/main.jpg"));
+    QSplashScreen ss(QPixmap(":new/prefix1/UI/main.jpg"));
     ss.show();
     a.processEvents();
     QThread::sleep(2);

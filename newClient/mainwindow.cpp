@@ -17,7 +17,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    Globals::id=ui->lineEdit->text().toInt();
+    Globals::meid=ui->lineEdit->text();
     joinroom *mast=new joinroom;
     this->close();
     mast->show();

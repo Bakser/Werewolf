@@ -30,7 +30,11 @@ SOURCES += main.cpp\
     joinroom.cpp \
     drawcard.cpp \
     waitroom.cpp \
-    globals.cpp
+    globals.cpp \
+    mainwindowplay.cpp \
+    handle1.cpp \
+    vote.cpp \
+    chat.cpp
 
 HEADERS  += mainwindow.h \
     night.h \
@@ -38,14 +42,19 @@ HEADERS  += mainwindow.h \
     joinroom.h \
     drawcard.h \
     waitroom.h \
-    globals.h
+    globals.h \
+    mainwindowplay.h \
+    vote.h \
+    chat.h
 
 FORMS    += mainwindow.ui \
     night.ui \
     newroom.ui \
     joinroom.ui \
     drawcard.ui \
-    waitroom.ui
+    waitroom.ui \
+    vote.ui \
+    chat.ui
 
 DISTFILES += \
     UI/_cupido.jpg \
@@ -63,6 +72,9 @@ DISTFILES += \
     UI/_wolf.jpg \
     UI/background.jpeg \
     UI/icon.jpg \
-    UI/main.jpg
+    UI/main.jpg \
+    UI/day.jpg \
+    UI/lose.jpg
 
-RESOURCES +=
+RESOURCES += \
+    picture.qrc

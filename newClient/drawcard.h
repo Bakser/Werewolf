@@ -14,7 +14,6 @@ class drawcard : public QDialog
 public:
     explicit drawcard(QWidget *parent = 0);
     ~drawcard();
-    int id;
 
 private slots:
     void on_pushButton_clicked();

@@ -18,6 +18,9 @@ public:
 
 private slots:
     void on_pushButton_clicked();
+    void success();
+    void full();
+    void owner();
 
     //void on_lineEdit_editingFinished();
 
