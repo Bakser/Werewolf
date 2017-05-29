@@ -3,10 +3,11 @@
 #include "eventhandler.h"
 #include "RoomHandler.h"
 #include "Gamestatus.h"
+#include <queue>
 class Gamestatus;
 class Player;
 class Game: public EventHandler{
-    Q_OBJECT
+    //Q_OBJECT
     protected:
         RoomHandler* room;
         Gamestatus* status;
@@ -14,6 +15,9 @@ class Game: public EventHandler{
         std::vector<Player*> waitVote,waitMessage,waitSpecial;
         std::vector<QString> deadbuffer;
         std::map<QString,bool>poied;
+        int stage,round;
+        std::queue<QString> waitq;
+        bool hunterflag,capflag,sayflag,voteflag;
     private:
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);
@@ -22,20 +26,26 @@ class Game: public EventHandler{
         void set(QString,bool,bool,QString);//vote say
         void report(QString);
         void reportall();
-        void startAwaitsession(int);
+        //void startAwaitsession(int);
         void broadcast(QString,QString,bool);
         void closeall();
-        int deadclear(std::vector<QString>,int);
+        int deadclr(std::vector<QString>,bool);
         int dayround(int);
         int nightround(int);
-        QString allvote(QString,int);
+        void solvecap();
+        void solveq();
+        void solvehunter();
+        void gameend(int);
+        void allvote(QString,int);
+        QString resforallvote();
     public:
         //void sendMessage(QString,QString);
         Game(std::vector<QString>,std::vector<int>,ServerNetworkInterface*,RoomHandler*);
-        QString askforonevote(QString,QString,int);//user info
+        void askforonevote(QString,QString,int);//user info
+        QString resforonevote(QString);
         bool askforonemessage(QString,QString,QString,int);//username channel info
         void run();
-    signals:
-        void receiveOK();
+    //signals:
+        //void receiveOK();
 };
 #endif

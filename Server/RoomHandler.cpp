@@ -104,7 +104,7 @@ void RoomHandler::handle(QString username,QString message){
     }
     else if(message[0]=='s')
         startgame();
-    if(setting.size())
+    if(setting.size()&&!gamestarted)
            this->flush();
 }
 void RoomHandler::startgame(){

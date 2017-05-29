@@ -122,8 +122,8 @@ QString Gamestatus::vote(std::vector<Player*> voters){//投票过程 如果多�
             flag=0;
         }
         else if(c.second==tmp){
-            flag=1;
             if(!flag)res=nameform(res);
+            flag=1;
             res+=nameform(c.first);
         }
     return res;
