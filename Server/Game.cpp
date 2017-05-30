@@ -226,6 +226,7 @@ int Game::dayround(int rn){
         if(tmp)return tmp;
         if(rn==1){
             room->broadcast(QString("TalkCaptain"));
+            waitMessage=waitVote=std::vector<Player*>();
             while(!waitq.empty())waitq.pop();
             for(int i(0);i<n;i++)
                 waitq.push(users[i]);
@@ -273,6 +274,7 @@ int Game::dayround(int rn){
                     s=i;
         }
         order=!order?-1:1;
+        waitMessage=waitVote=std::vector<Player*>();
         while(!waitq.empty())waitq.pop();
         for(int i((s+order+n)%n);i!=s;i=(i+order+n)%n)
             waitq.push(users[i]);
@@ -299,13 +301,17 @@ int Game::dayround(int rn){
                 return 0;
             }
             else deadbuffer.push_back(t);
+            stage+=2;
+            goto label2;
             return 0;
         }
     }
     if(stage==9){
+        label2:
         int tmp=deadclr(deadbuffer,1);
-        stage=-2;
-        round++;
+        if(tmp)return tmp;
+        stage=0;round++;
+        tmp=nightround(round);
         if(tmp)return tmp;
         return 0;
     }
@@ -401,9 +407,9 @@ int Game::nightround(int rn){
         for(auto c:users)
             if((killed[c]&&(int(guarded[c])+int(saved[c])!=1))||poisoned[c])
                 deadbuffer.push_back(c),poied[c]=poisoned[c];
-        stage=-1;
-        round++;
         guarded.clear();killed.clear();saved.clear();poisoned.clear();
+        stage=1;round++;
+        dayround(round);
         return 0;
     }
 }

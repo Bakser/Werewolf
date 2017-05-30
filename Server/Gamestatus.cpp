@@ -28,10 +28,10 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
     game=_game;
     int sum=0;
     std::vector<int>_roles;
-    for(int i(1);i<7;i++){
+    for(int i(1);i<6;i++){
         sum+=setting[i];
         for(int j(0);j<setting[i];j++)
-            _roles.push_back(i-1);
+            _roles.push_back(i);
     }
     for(int i(0);i<setting[0]-sum;i++)
         _roles.push_back(0);
@@ -42,14 +42,14 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
         alive[c]=1;
         cap[c]=used1[c]=used2[c]=0;
         role[c]=roleToInt[_roles[i]];
-        player[c]=new Player(c,roleToInt[_roles[i]]);
-        if(!roleplayer.count(roleToInt[_roles[i]])){
-            std::vector<Player*> tmpv;
-            tmpv.push_back(player[c]);
-            roleplayer[roleToInt[_roles[i]]]=tmpv;
-        }
-        else roleplayer[roleToInt[_roles[i]]].push_back(player[c]);
+        player[c]=new Player(c,role[c]);
+        if(!roleplayer.count(role[c]))roleplayer[role[c]]=std::vector<Player*>(1,player[c]);
+        else roleplayer[role[c]].push_back(player[c]);
     }
+    //for Debug
+    for(auto c:roleToInt)
+        for(auto x:roleplayer[c])
+            qDebug()<<c<<" "<<x->username;
 }
 QString Gamestatus::showonestatus(QString name){
     return name+QString(" ")+role[name]+(alive[name]?QString(" 1"):QString(" 0"))+(cap[name]?QString(" 1\n"):QString(" 0\n"));;
