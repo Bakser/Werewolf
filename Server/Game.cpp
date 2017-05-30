@@ -258,12 +258,12 @@ int Game::dayround(int rn){
         //如果警长死了怎么进入下一轮
         if(!cap.length()){
             stage=5;
-            goto label;
+            goto stage5;
         }
         return 0;
     }
     if(stage==5){
-        label:
+        stage5:
         for(auto c:users)
             if(status->alive[c]&&status->cap[c])
                 cap=c;
@@ -326,15 +326,22 @@ int Game::nightround(int rn){
         reportall();
         closeall();
     //守卫
+        bool tflag=1;
         for(auto c:status->roleplayer[QString("defender")])
             if(status->alive[c->username]){
                 askforonevote(c->username,QString("Guard"));
+                tflag=0;
                 //if(tmp.length())
                     //guarded[tmp]=1;
             }
+        if(tflag){
+            stage=2;
+            goto stage2;
+        }
         return 0;
     }
     if(stage==2){
+        stage2:
         for(auto c:status->roleplayer[QString("defender")])
             if(status->alive[c->username]){
                 QString tmp=resforonevote(c->username);
@@ -362,12 +369,18 @@ int Game::nightround(int rn){
         else tmp=QString("");
         qDebug()<<"Wolfed";
         QString killd=tmp;
-       for(auto c:status->roleplayer[QString("witch")])
+        bool tflag=1;
+        for(auto c:status->roleplayer[QString("witch")])
             if(status->alive[c->username]&&!status->used1[c->username])
-                askforonevote(c->username,QString("Witch\n@")+killd);
-       return 0;
+                askforonevote(c->username,QString("Witch\n@")+killd),tflag=0;
+        if(tflag){
+            stage=6;
+            goto stage6;
+        }
+        return 0;
      }
     if(stage==6){
+        stage6:
         for(auto c:status->roleplayer[QString("witch")])
             if(status->alive[c->username]&&!status->used1[c->username]){
                 QString tmp=resforonevote(c->username);
@@ -376,12 +389,18 @@ int Game::nightround(int rn){
                     saved[tmp]=1,status->used1[c->username]=1;
             }
         qDebug()<<"Witch1";
+        bool tflag=1;
         for(auto c:status->roleplayer[QString("witch")])
             if(status->alive[c->username]&&!status->used2[c->username])
-                askforonevote(c->username,QString("Witch"));\
+                askforonevote(c->username,QString("Witch")),tflag=0;
+        if(tflag){
+            stage=8;
+            goto stage8;
+        }
         return 0;
     }
     if(stage==8){
+        stage8:
        for(auto c:status->roleplayer[QString("witch")])
            if(status->alive[c->username]&&!status->used2[c->username]){
                QString tmp=resforonevote(c->username);
@@ -390,12 +409,18 @@ int Game::nightround(int rn){
                    poisoned[tmp]=1,status->used2[c->username]=1;
            }
         qDebug()<<"Witched2";
+        bool tflag=1;
         for(auto c:status->roleplayer[QString("prophet")])
             if(status->alive[c->username])
-                askforonevote(c->username,QString("Prophet"));
+                askforonevote(c->username,QString("Prophet")),tflag=0;
+        if(tflag){
+            stage=10;
+            goto stage10;
+        }
         return 0;
     }
     if(stage==10){
+        stage10:
         for(auto c:status->roleplayer[QString("prophet")])
             if(status->alive[c->username]){
                 QString tmp=resforonevote(c->username);
