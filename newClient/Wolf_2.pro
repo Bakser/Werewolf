@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,7 +35,10 @@ SOURCES += main.cpp\
     mainwindowplay.cpp \
     handle1.cpp \
     vote.cpp \
-    chat.cpp
+    chat.cpp \
+    clientnetworkinterface.cpp \
+    eventhandler.cpp \
+    stringoperate.cpp
 
 HEADERS  += mainwindow.h \
     night.h \
@@ -45,7 +49,10 @@ HEADERS  += mainwindow.h \
     globals.h \
     mainwindowplay.h \
     vote.h \
-    chat.h
+    chat.h \
+    clientnetworkinterface.h \
+    eventhandler.h \
+    stringoperate.h
 
 FORMS    += mainwindow.ui \
     night.ui \

@@ -22,6 +22,10 @@ private slots:
 
 private:
     Ui::drawcard *ui;
+    void closeEvent(QCloseEvent *);
+
+signals:
+    void onclose();
 };
 
 #endif // DRAWCARD_H

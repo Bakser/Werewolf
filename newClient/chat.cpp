@@ -48,3 +48,13 @@ void chat::on_roomSend_clicked()
     qDebug()<<Globals::meid<<": "<<message<<endl;
     ui->roomMessageEdit->clear();
 }
+
+void chat::setRoomEnabled(bool f)
+{
+    ui->roomSend->setEnabled(f);
+}
+
+void chat::setWerewolfEnabled(bool f)
+{
+    ui->werewolfSend->setEnabled(f);
+}

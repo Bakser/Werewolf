@@ -3,17 +3,20 @@
 
 #include <QMainWindow>
 #include "globals.h"
+#include "clientnetworkinterface.h"
+#include "eventhandler.h"
+#include "joinroom.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public EventHandler
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(ClientNetworkInterface *networkInterface, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -21,6 +24,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    void handle(QString);
+    bool canHandle(QString);
+    EventHandler* selectHandler(QString);
+    joinroom *mast;
 };
 
 #endif // MAINWINDOW_H

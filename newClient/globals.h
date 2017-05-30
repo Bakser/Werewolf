@@ -2,7 +2,7 @@
 #define GLOBALS_H
 
 #include <QString>
-
+#include <vector>
 class Globals
 {
 public:
@@ -12,6 +12,23 @@ public:
     static bool player_alive[50];//1-alive;0-died
     static int nplayer;
     static int merole;
+    static bool newGameStarted;
+    static QString master;
+    static QString lastDefend;
+    static void update(QString);
+    static void reset();
+    /*
+    QString meid;
+    int roomnumber;
+    QString *player_id;
+    bool *player_alive;
+    int nplayer;
+    int merole;
+    bool afterInitialize;
+    Globals();
+    ~Globals();
+    void update(QString);
+    */
 };
 
 

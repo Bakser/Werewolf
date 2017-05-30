@@ -2,17 +2,21 @@
 #define WAITROOM_H
 
 #include <QDialog>
+#include "eventhandler.h"
+#include <QCloseEvent>
+#include "mainwindowplay.h"
+#include <QLabel>
 
 namespace Ui {
 class waitroom;
 }
 
-class waitroom : public QDialog
+class waitroom : public QDialog, public EventHandler
 {
     Q_OBJECT
 
 public:
-    explicit waitroom(QWidget *parent = 0);
+    explicit waitroom(ClientNetworkInterface*, QWidget *parent = 0);
     ~waitroom();
 
 private slots:
@@ -26,8 +30,15 @@ private slots:
 
     void start();
 
+signals:
+    void onclose();
 private:
     Ui::waitroom *ui;
+    void handle(QString s);
+    bool canHandle(QString s);
+    EventHandler* selectHandler(QString s);
+    void closeEvent(QCloseEvent*);
+    MainWindowplay *p;
 };
 
 #endif // WAITROOM_H

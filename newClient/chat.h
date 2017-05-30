@@ -15,7 +15,8 @@ class chat: public QMainWindow
 public:
     explicit chat(QWidget *parent = 0);
     ~chat();
-
+    void setRoomEnabled(bool);
+    void setWerewolfEnabled(bool);
 private slots:
     void on_werewolfSend_clicked();
 

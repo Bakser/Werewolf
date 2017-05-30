@@ -4,9 +4,10 @@
 #include "waitroom.h"
 #include <QDebug>
 
-newroom::newroom(QWidget *parent) :
+newroom::newroom(ClientNetworkInterface *_networkInterface, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::newroom)
+    ui(new Ui::newroom),
+    networkInterface(_networkInterface)
 {
     ui->setupUi(this);
     ui->spinBox->setValue(3);
@@ -25,10 +26,15 @@ void newroom::on_pushButton_clicked()
     int total=nvillager+nwolf+bwitch+bforesee+bhunter+bguard;
     //将新建房间信息传回服务器
     qDebug()<<"bulid "<<Globals::roomnumber<<" "<<total<<" "<<nwolf<<" "<<(int)bforesee<<" "<<(int)bwitch<<" "<<(int)bguard<<" "<<(int)bhunter<<" "<<(int)bpolice<<endl;
-    waitroom *dr=new waitroom;
+    networkInterface->addString("build " + QString::number(Globals::roomnumber) + "\n" + QString::number(total) + " "
+                                + QString::number(nwolf) + " " + QString::number((int)bforesee) + " "
+                                + QString::number((int)bwitch) + " " + QString::number((int)bguard) + " "
+                                + QString::number((int)bhunter) + " " + QString::number((int)bpolice));
     this->close();
-    dr->show();
-    dr->exec();
+    //waitroom *dr=new waitroom;
+    //this->close();
+    //dr->show();
+    //dr->exec();
 }
 
 
@@ -73,4 +79,10 @@ void newroom::on_checkBox_3_clicked()
 void newroom::on_checkBox_5_clicked()
 {
     bpolice=ui->checkBox_5->isChecked();
+}
+
+void newroom::closeEvent(QCloseEvent *event)
+{
+    emit onclose();
+    QDialog::closeEvent(event);
 }

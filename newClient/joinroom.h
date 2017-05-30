@@ -3,17 +3,20 @@
 
 #include <QDialog>
 #include "globals.h"
+#include "eventhandler.h"
+#include "waitroom.h"
+#include "newroom.h"
 
 namespace Ui {
 class joinroom;
 }
 
-class joinroom : public QDialog
+class joinroom : public QDialog, public EventHandler
 {
     Q_OBJECT
 
 public:
-    explicit joinroom(QWidget *parent = 0);
+    explicit joinroom(ClientNetworkInterface*, QWidget *parent = 0);
     ~joinroom();
 
 private slots:
@@ -26,6 +29,10 @@ private slots:
 
 private:
     Ui::joinroom *ui;
+    void handle(QString s);
+    bool canHandle(QString s);
+    EventHandler* selectHandler(QString s);
+    waitroom *dr;
 };
 
 #endif // JOINROOM_H

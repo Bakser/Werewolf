@@ -73,7 +73,14 @@ void drawcard::on_pushButton_clicked()
 
 void drawcard::on_commandLinkButton_clicked()
 {
-    MainWindowplay *p=new MainWindowplay;
+    //MainWindowplay *p=new MainWindowplay;
+    //this->close();
+    //p->show();
     this->close();
-    p->show();
+}
+
+void drawcard::closeEvent(QCloseEvent *event)
+{
+    emit onclose();
+    QDialog::closeEvent(event);
 }

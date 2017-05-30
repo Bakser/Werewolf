@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include "globals.h"
+#include "clientnetworkinterface.h"
+#include <QCloseEvent>
 
 namespace Ui {
 class newroom;
@@ -13,7 +15,7 @@ class newroom : public QDialog
     Q_OBJECT
 
 public:
-    explicit newroom(QWidget *parent = 0);
+    explicit newroom(ClientNetworkInterface*, QWidget *parent = 0);
     ~newroom();
     int nvillager;
     int nwolf;
@@ -44,6 +46,11 @@ private slots:
 
 private:
     Ui::newroom *ui;
+    ClientNetworkInterface *networkInterface;
+    void closeEvent(QCloseEvent *);
+
+signals:
+    void onclose();
 };
 
 #endif // NEWROOM_H
