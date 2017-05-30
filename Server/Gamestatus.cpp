@@ -31,7 +31,7 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
     for(int i(1);i<7;i++){
         sum+=setting[i];
         for(int j(0);j<setting[i];j++)
-            _roles.push_back(i);
+            _roles.push_back(i-1);
     }
     for(int i(0);i<setting[0]-sum;i++)
         _roles.push_back(0);
