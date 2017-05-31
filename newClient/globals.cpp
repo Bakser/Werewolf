@@ -12,6 +12,7 @@ QString Globals::player_id[50]={"231","b","qw","sdf","d","d","23fe","d","sd","er
 int Globals::nplayer=10;
 QString Globals::lastDefend = "";
 QString Globals::master = "";
+QString Globals::meroleString = "";
 int Globals::merole=2;//自己的身份
 bool Globals::newGameStarted = false;
 
@@ -26,6 +27,7 @@ void Globals::update(QString s)
         if (i == 1)
         {
             meid = saver[0];
+            meroleString = saver[1];
             if (saver[1] == "villager")
                 merole = 0;
             else if (saver[1] == "prophet")
@@ -55,4 +57,15 @@ void Globals::reset()
 {
     newGameStarted = false;
     master = lastDefend = "";
+}
+
+void Globals::dieUpdate(QString username)
+{
+    for (int i = 0; i < nplayer; ++i)
+    {
+        if (player_id[i] == username)
+        {
+            player_alive[i] = false;
+        }
+    }
 }

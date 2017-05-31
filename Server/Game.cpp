@@ -96,11 +96,12 @@ void Game::handle(QString username,QString message){
     }
 }
 void Game::askforonevote(QString username,QString info,int msec=10000){//这里的计时请client调小点自己计，务必不要在计时结束后发包
-    set(username,1,0);
+    //set(username,1,0);
     waitVote=waitMessage=std::vector<Player*>();
     waitVote.push_back(status->player[username]);
     if(info.length())
         sendMessage(username,info);
+    set(username,1,0);
     //startAwaitsession(msec);
     //set(username,0,0);
     //return status->player[username]->lastvote;
@@ -111,11 +112,12 @@ QString Game::resforonevote(QString username){
     return status->player[username]->lastvote;
 }
 bool Game::askforonemessage(QString username,QString channel,QString info,int msec=10000){
-    set(username,0,1,channel);
+    //set(username,0,1,channel);
     waitVote=waitMessage=std::vector<Player*>();
     waitMessage.push_back(status->player[username]);
     if(info.length())
         sendMessage(username,info);
+    set(username,0,1,channel);
     //startAwaitsession(msec);
     //set(username,0,0);
     return 1;
@@ -156,6 +158,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
     int res=0;
     for(auto c:buffer)
         res=std::max(res,status->die(c));
+    if(res)return res;
     reportall();
     if(flag){
         for(auto c:buffer){
@@ -434,16 +437,17 @@ int Game::nightround(int rn){
                 deadbuffer.push_back(c),poied[c]=poisoned[c];
         guarded.clear();killed.clear();saved.clear();poisoned.clear();
         stage=1;round++;
-        dayround(round);
+        int tres=dayround(round);
+        if(tres)return tres;
         return 0;
     }
 }
 void Game::gameend(int res){
     room->broadcast("GameEnded");
-    this->broadcast("werewolf",res==1?"YouWin":"YouLose",1);
+    this->broadcast("werewolf",res==2?"YouWin":"YouLose",1);
     for(auto c:users)
         if(!status->canbroad(c,"werewolf",1))
-            sendMessage(c,res==1?"YouLose":"YouWin");
+            sendMessage(c,res==2?"YouLose":"YouWin");
     room->broadcast(QString("EndStatus\n")+status->showallstatus());
 }
 void Game::run(){

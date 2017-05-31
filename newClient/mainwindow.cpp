@@ -8,6 +8,7 @@ MainWindow::MainWindow(ClientNetworkInterface *_networkInterface, QWidget *paren
     EventHandler(_networkInterface)
 {
     ui->setupUi(this);
+    setWindowTitle("Login");
 }
 
 MainWindow::~MainWindow()
@@ -30,6 +31,7 @@ void MainWindow::handle(QString s)
 {
     qDebug() << "MainWindow received " << s;
     mast = new joinroom(networkInterface);
+    mast->setWindowTitle("Select Room");
     this->hide();
     mast->show();
     //mast->exec();

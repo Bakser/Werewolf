@@ -11,7 +11,6 @@ joinroom::joinroom(ClientNetworkInterface *_networkInterface, QWidget *parent) :
 {
     ui->setupUi(this);
     ui->label_2->setVisible(false);
-
 }
 
 joinroom::~joinroom()
@@ -52,6 +51,7 @@ void joinroom::owner()
 {
     qDebug() << "joinroom::owner()";
     newroom *r=new newroom(networkInterface);
+    r->setWindowTitle("Game Config");
     this->hide();
     r->show();
     //r->exec();

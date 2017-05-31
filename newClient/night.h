@@ -22,7 +22,7 @@ public slots:
     void setWitch();
     void setFore();
     void setCap();
-    void setDie();
+    void setLose();
     void setWin();
     void setCapPass();
     void setHunter();

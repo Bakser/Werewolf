@@ -14,16 +14,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListView" name="werewolfMessage">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>281</width>
-      <height>151</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="werewolfMessageEdit">
     <property name="geometry">
      <rect>
@@ -104,6 +94,16 @@
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;房间频道&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="werewolfMessage">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>0</y>
+      <width>271</width>
+      <height>151</height>
+     </rect>
     </property>
    </widget>
   </widget>

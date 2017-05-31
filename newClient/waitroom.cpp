@@ -22,6 +22,16 @@ waitroom::waitroom(ClientNetworkInterface *_networkInterface, QWidget *parent) :
     //正式版改成true
     ui->pushButton_3->setVisible(false);
     //ui->pushButton_3->setVisible(true);
+    setWindowTitle("Room #" + QString::number(Globals::roomnumber));
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            label[i][j] = new QLabel(this);
+            label[i][j]->setGeometry(20 + i * 50, 20 + j * 20, 50, 20);
+            label[i][j]->setText("");
+        }
+    }
 }
 
 waitroom::~waitroom()
@@ -128,7 +138,14 @@ void waitroom::handle(QString s)
     }
     else if (s.mid(0, 6) == "Status")
     {
-        ui->statusLabel->setText(s);
+        //ui->statusLabel->setText(s);
+        std::vector<QString> temp = split(s, "\n");
+        for (int i = 2; i < temp.size(); ++i)
+        {
+            std::vector<QString> saver = split(temp[i], " ");
+            label[(i - 2) / 4][(i - 2) % 4]->setText(saver[0]);
+            label[(i - 2) / 4][(i - 2) % 4]->setStyleSheet((saver[1] == "1") ? "color:green" : "color:red");
+        }
     }
 }
 

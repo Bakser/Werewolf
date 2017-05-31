@@ -39,6 +39,7 @@ private:
     EventHandler* selectHandler(QString s);
     void closeEvent(QCloseEvent*);
     MainWindowplay *p;
+    QLabel *label[3][4];
 };
 
 #endif // WAITROOM_H

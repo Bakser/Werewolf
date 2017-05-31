@@ -61,11 +61,12 @@ void vote::on_pushButton_clicked()
             ui->label->setText("Voted successfully");
         }
     }
-    if (voteType == "Wolf" || voteType == "Poison" || voteType == "Prophet")
+    else
     {
+        qDebug() << "now vote type = " << voteType;
         emit voteSuccess(choose);
         ui->pushButton->setEnabled(false);
-        ui->label->setText("Voted successfully");
+        ui->label->setText("Votes successfully");
     }
 
 }
@@ -91,22 +92,26 @@ void vote::on_no_clicked()
 void vote::setVoteType(QString type)
 {
     voteType = type;
+    /*
     if (type == "Guard")
         ui->label->setText("Please choose a player to guard.");
     if (type == "Wolf")
         ui->label->setText("Please choose a player to kill.");
     if (type == "Poison")
         ui->label->setText("Please choose a player to poison.");
-    if (type == "Save")
+    */
+    if (type == "Save" || type == "Order")
     {
-        ui->label->setText("Do you want to save the player?");
+        //ui->label->setText("Do you want to save the player?");
         ui->yes->setVisible(true);
         ui->no->setVisible(true);
     }
+    /*
     if (type == "Prophet")
     {
         ui->label->setText("Please choose a player to check.");
     }
+    */
 }
 
 void vote::setYesNoEnabled(bool f)

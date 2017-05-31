@@ -26,19 +26,29 @@ private:
     void handle(QString);
     bool canHandle(QString);
     EventHandler* selectHandler(QString);
-    QTextEdit *statusText;
+    //QTextEdit *statusText;
     vote *v;
     night *n;
     chat *c;
     QTimer *timer;
+    QTimer *deadline;
     QLabel *label;
     QString death;
-    void accessUnable();
+    QString captain;
+    QString captainState;
+private slots:
     void endGuardSection(QString = "");
     void endWolfSection(QString = "");
     void endSaveSection(bool = false);
     void endPoisonSection(QString = "");
     void endProphetSection(QString = "");
+    void endVoteSection(QString = "");
+    void endCarrySection(QString = "");
+    void endOrderSection(bool = false);
+    void endPassSection(QString = "");
+    void MessageNotSended();
+    void accessUnable();
+    void flushRemainingTime();
 };
 
 #endif // MAINWINDOWPLAY_H

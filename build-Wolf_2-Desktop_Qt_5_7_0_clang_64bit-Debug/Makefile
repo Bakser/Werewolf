@@ -247,6 +247,7 @@ DIST          = ../newClient/UI/_cupido.jpg \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/spec_post.prf \
+		../newClient/.qmake.stash \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/default_pre.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -439,6 +440,7 @@ Makefile: ../newClient/Wolf_2.pro ../../../Qt5.7.0/5.7/clang_64/mkspecs/macx-cla
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/default_pre.prf \
 		../../../Qt5.7.0/5.7/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -600,6 +602,7 @@ Makefile: ../newClient/Wolf_2.pro ../../../Qt5.7.0/5.7/clang_64/mkspecs/macx-cla
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/features/qt_config.prf:
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/macx-clang/qmake.conf:
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/features/default_pre.prf:
 ../../../Qt5.7.0/5.7/clang_64/mkspecs/features/mac/default_pre.prf:
@@ -889,6 +892,14 @@ moc_vote.cpp: ../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/QDia
 
 moc_chat.cpp: ../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
+		../newClient/clientnetworkinterface.h \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtNetwork.framework/Headers/QTcpSocket \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtNetwork.framework/Headers/qtcpsocket.h \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/QString \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/qstring.h \
+		../newClient/eventhandler.h \
 		../newClient/chat.h \
 		../../../Qt5.7.0/5.7/clang_64/bin/moc
 	/Users/wyfcyx/Qt5.7.0/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/wyfcyx/Qt5.7.0/5.7/clang_64/mkspecs/macx-clang -I/Users/wyfcyx/Desktop/Werewolf/newClient -I/Users/wyfcyx/Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers -I/Users/wyfcyx/Qt5.7.0/5.7/clang_64/lib/QtGui.framework/Headers -I/Users/wyfcyx/Qt5.7.0/5.7/clang_64/lib/QtNetwork.framework/Headers -I/Users/wyfcyx/Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/Users/wyfcyx/Qt5.7.0/5.7/clang_64/lib ../newClient/chat.h -o moc_chat.cpp
@@ -1273,17 +1284,17 @@ vote.o: ../newClient/vote.cpp ../newClient/vote.h \
 chat.o: ../newClient/chat.cpp ../newClient/chat.h \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		ui_chat.h \
-		../newClient/mainwindow.h \
-		../newClient/globals.h \
-		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/QString \
-		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/qstring.h \
 		../newClient/clientnetworkinterface.h \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/QObject \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtNetwork.framework/Headers/QTcpSocket \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtNetwork.framework/Headers/qtcpsocket.h \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/QString \
+		../../../Qt5.7.0/5.7/clang_64/lib/QtCore.framework/Headers/qstring.h \
 		../newClient/eventhandler.h \
+		ui_chat.h \
+		../newClient/mainwindow.h \
+		../newClient/globals.h \
 		../newClient/joinroom.h \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
 		../../../Qt5.7.0/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \

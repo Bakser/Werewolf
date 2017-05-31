@@ -15,8 +15,10 @@ public:
     static bool newGameStarted;
     static QString master;
     static QString lastDefend;
+    static QString meroleString;
     static void update(QString);
     static void reset();
+    static void dieUpdate(QString);
     /*
     QString meid;
     int roomnumber;

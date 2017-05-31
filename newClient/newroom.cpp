@@ -12,6 +12,12 @@ newroom::newroom(ClientNetworkInterface *_networkInterface, QWidget *parent) :
     ui->setupUi(this);
     ui->spinBox->setValue(3);
     ui->spinBox_3->setValue(3);
+    ui->checkBox->setChecked(false);
+    ui->checkBox_2->setChecked(false);
+    ui->checkBox_3->setChecked(false);
+    ui->checkBox_4->setChecked(false);
+    ui->checkBox_5->setChecked(false);
+    bwitch = bhunter = bforesee = bguard = bpolice = false;
 }
 
 newroom::~newroom()

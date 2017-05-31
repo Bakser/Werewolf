@@ -59,7 +59,7 @@ void night::setCap()
     ui->label->setScaledContents(true);
 }
 
-void night::setDie()
+void night::setLose()
 {
     ui->label->setPixmap(QPixmap(":new/prefix1/UI/lose.jpg"));
     ui->label->setScaledContents(true);

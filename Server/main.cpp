@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainDialog w;
-    w.show();
+    //w.show();
 
     EventHandler *servercenter = new ServerCenter();
     ServerNetworkInterface *networkInterface = new ServerNetworkInterface(servercenter);
