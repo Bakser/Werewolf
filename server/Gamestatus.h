@@ -16,9 +16,9 @@ class Player{
 };
 class Gamestatus{
     private:
-        std::vector<int>setting;
         Game* game;
     public:
+        std::vector<int>setting;
         std::map<QString,bool>cap;
         std::vector<QString>playerid;
         std::map<QString,bool>alive,used1,used2;

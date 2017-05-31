@@ -227,31 +227,37 @@ int Game::dayround(int rn){
         int tmp=deadclr(deadbuffer,rn==1);
         deadbuffer.clear();
         if(tmp)return tmp;
-        if(rn==1){
-            room->broadcast(QString("TalkCaptain"));
-            waitMessage=waitVote=std::vector<Player*>();
-            while(!waitq.empty())waitq.pop();
-            for(int i(0);i<n;i++)
-                waitq.push(users[i]);
-            solveq();
-            return 0;
+        if(status->setting[6]){
+            if(rn==1){
+                room->broadcast(QString("TalkCaptain"));
+                waitMessage=waitVote=std::vector<Player*>();
+                while(!waitq.empty())waitq.pop();
+                for(int i(0);i<n;i++)
+                    waitq.push(users[i]);
+                solveq();
+                return 0;
+            }
         }
+        else goto stage3;
         return 0;
     }
     if(stage==3){
-        if(rn==1&&!voteflag){
-            allvote("ChooseCap",10000);
-            voteflag=1;
-            return 0;
-        }
-        if(rn==1&&voteflag){
-            voteflag=0;
-            QString t=resforallvote();
-            qDebug()<<"Vote cap "<<t;
-            if(t[0]=='@')
-                t=QString("");
-            else status->changecap(t);
-            broadcast("Allalive",QString("Captain\n")+nameform(t));
+        stage3:
+        if(status->setting[6]){
+            if(rn==1&&!voteflag){
+                allvote("ChooseCap",10000);
+                voteflag=1;
+                return 0;
+            }
+            if(rn==1&&voteflag){
+                voteflag=0;
+                QString t=resforallvote();
+                qDebug()<<"Vote cap "<<t;
+                if(t[0]=='@')
+                    t=QString("");
+                else status->changecap(t);
+                broadcast("Allalive",QString("Captain\n")+nameform(t));
+            }
         }
         for(auto c:users)
             if(status->alive[c]&&status->cap[c]){
@@ -367,8 +373,7 @@ int Game::nightround(int rn){
             set(c->username,0,0);
         QString tmp=status->vote(waitVote);
         qDebug()<<"Wolfkill "<<tmp;
-        if(tmp[0]!='@')
-            killed[tmp]=1;
+        if(tmp[0]!='@')killed[tmp]=1;
         else tmp=QString("");
         qDebug()<<"Wolfed";
         QString killd=tmp;
@@ -453,8 +458,7 @@ void Game::gameend(int res){
 void Game::run(){
     qDebug()<<"Run";
     int res=0;
-    /*
-    for(int round=0;;round++){
+    /* for(int round=0;;round++){
         if(round&1)res=dayround(round);
         else res=nightround(round);
         if(res)
