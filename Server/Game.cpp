@@ -1,3 +1,10 @@
+/*
+名称：Game.cpp
+作者：计62 王晓智 2016011257
+时间：2017.5.30
+内容：实现游戏逻辑类
+版权：全部自行完成
+*/
 #include "Game.h"
 #include <map>
 #include <iostream>
@@ -16,18 +23,10 @@ Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInt
     hunterflag=capflag=sayflag=voteflag=0;
 }
 
-/*
-void Game::sendMessage(QString username, QString message){
-    //room->sendMessage(username,message);
-    networkInterface->sendMessage(username, message);
-}
-*/
-bool Game::canHandle(QString message){
-    //qDebug()<<"Game can handle "<<message;
+bool Game::canHandle(QString message){//责任链到此为止
     return 1;
 }
 EventHandler* Game::selectHandler(QString message){
-    qDebug()<<"Yao Shou La";
     return this;
 }
 bool Game::judgewait(){
@@ -44,7 +43,7 @@ bool Game::judgewait(){
     //waitVote=waitMessage=waitSpecial=std::vector<Player*>();
     return 1;
 }
-void Game::set(QString username,bool vote,bool say,QString channel=QString("Room")){
+void Game::set(QString username,bool vote,bool say,QString channel=QString("Room")){//各种通信格式参考逻辑主文档
     sendMessage(username,QString("Set\n")+(vote?QString("1 "):QString("0 "))+(say?QString("1 "):QString("0 "))+channel);
 }
 void Game::report(QString username){
@@ -54,20 +53,6 @@ void Game::reportall(){
     for(auto c:status->playerid)
         report(c);
 }
-/*
-void Game::startAwaitsession(int msec){
-    msec*=DebugMulti;
-    QTimer *timer = new QTimer(this);
-    timer->setInterval(msec);
-    QEventLoop *loop = new QEventLoop(this);
-    timer->start();
-    connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
-    connect(this, SIGNAL(receiveOK()), loop, SLOT(quit()));
-    qDebug() << "connect loop-end signal successfully";
-    loop->exec();
-    delete timer;
-    delete loop;
-}*/
 void Game::broadcast(QString type,QString message,bool f=0){
     if(type==QString("Allalive")){
         for(auto c:users)
@@ -80,11 +65,10 @@ void Game::broadcast(QString type,QString message,bool f=0){
             sendMessage(c,message);
 }
 void Game::handle(QString username,QString message){
-    //qDebug()<<"Game Handle";
     if(message[0]=='w'&&message[4]=='c')
         broadcast(QString("werewolf"),message,1);
     status->player[username]->handle(message);
-    if(judgewait()){
+    if(judgewait()){//如果满足了等待要求，做对应处理
         sayflag=0;
         if(hunterflag)solvehunter();
         if(capflag)solvecap();
@@ -95,39 +79,27 @@ void Game::handle(QString username,QString message){
         }
     }
 }
-void Game::askforonevote(QString username,QString info,int msec=10000){//这里的计时请client调小点自己计，务必不要在计时结束后发包
-    //set(username,1,0);
+void Game::askforonevote(QString username,QString info){
     waitVote=waitMessage=std::vector<Player*>();
     waitVote.push_back(status->player[username]);
     if(info.length())
         sendMessage(username,info);
     set(username,1,0);
-    //startAwaitsession(msec);
-    //set(username,0,0);
-    //return status->player[username]->lastvote;
 }
 QString Game::resforonevote(QString username){
     set(username,0,0);
     waitVote=std::vector<Player*>();
     return status->player[username]->lastvote;
 }
-bool Game::askforonemessage(QString username,QString channel,QString info,int msec=10000){
-    //set(username,0,1,channel);
+bool Game::askforonemessage(QString username,QString channel,QString info){
     waitVote=waitMessage=std::vector<Player*>();
     waitMessage.push_back(status->player[username]);
     if(info.length())
         sendMessage(username,info);
     set(username,0,1,channel);
-    //startAwaitsession(msec);
-    //set(username,0,0);
     return 1;
 }
-/*
-void Game::resforonemessage(QString username){
-    set(username,0,0);
-}*/
 void Game::closeall(){
-    qDebug()<<"closeall "<<users.size();
     for(auto c:users)
         set(c,0,0);
 }
@@ -155,6 +127,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
             capflag=1;
             waitVote.push_back(status->player[c]);
         }
+    //死亡结算中如果出现猎人崩人，警徽移交等事件，进入等待
     int res=0;
     for(auto c:buffer)
         res=std::max(res,status->die(c));
@@ -192,7 +165,7 @@ void Game::solvecap(){
         }
 }
 void Game::solveq(){
-    QString x=waitq.front();waitq.pop();
+    QString x=waitq.front();waitq.pop();//每次从队列中取一个进行发言
     if(waitMessage.size()){
         set(waitMessage[0]->username,0,0);
         waitMessage.clear();
@@ -200,7 +173,7 @@ void Game::solveq(){
     waitMessage.push_back(status->player[x]);
     set(x,0,1,"Room");
 }
-void Game::allvote(QString info,int msec){
+void Game::allvote(QString info){
     waitVote=waitMessage=std::vector<Player*>();
     for(auto c:users)
         if(status->alive[c])
@@ -208,7 +181,6 @@ void Game::allvote(QString info,int msec){
     if(info.length())
         broadcast("Allalive",info);
     broadcast("Allalive","Set\n1 0 Room");
-    //startAwaitsession(10000);
 }
 QString Game::resforallvote(){
     broadcast("Allalive","Set\n0 0 Room");
@@ -232,8 +204,9 @@ int Game::dayround(int rn){
                 room->broadcast(QString("TalkCaptain"));
                 waitMessage=waitVote=std::vector<Player*>();
                 while(!waitq.empty())waitq.pop();
-                for(int i(0);i<n;i++)
-                    waitq.push(users[i]);
+                for(auto c:users)
+                    if(status->alive[c])
+                        waitq.push(c);
                 solveq();
                 return 0;
             }
@@ -245,7 +218,7 @@ int Game::dayround(int rn){
         stage3:
         if(status->setting[6]){
             if(rn==1&&!voteflag){
-                allvote("ChooseCap",10000);
+                allvote("ChooseCap");
                 voteflag=1;
                 return 0;
             }
@@ -264,7 +237,6 @@ int Game::dayround(int rn){
                 cap=c;
                 askforonevote(c,"Order");
             }
-        //如果警长死了怎么进入下一轮
         if(!cap.length()){
             stage=5;
             goto stage5;
@@ -287,7 +259,6 @@ int Game::dayround(int rn){
         while(!waitq.empty())waitq.pop();
         for(int i((s+order+n)%n);i!=s;i=(i+order+n)%n)
             waitq.push(users[i]);
-            //askforonemessage(users[i],"Room","");
         if(cap.length()) waitq.push(cap);
         else waitq.push(users[0]);
         solveq();
@@ -295,7 +266,7 @@ int Game::dayround(int rn){
     }
     if(stage==7){
         if(!voteflag){
-            allvote("Vote",10000);
+            allvote("Vote");
             voteflag=1;
             return 0;
         }
@@ -306,7 +277,7 @@ int Game::dayround(int rn){
             if(t[0]=='@'){
                 broadcast("Allalive",QString("Equal\n")+t);
                 voteflag=1;
-                allvote("Vote",10000);
+                allvote("Vote");
                 return 0;
             }
             else deadbuffer.push_back(t);
@@ -328,7 +299,6 @@ int Game::dayround(int rn){
 int Game::nightround(int rn){
     qDebug()<<"Nightstage "<<stage;
     static std::map<QString,bool> guarded,killed,saved,poisoned;
-    //guarded.clear();killed.clear();saved.clear();poisoned.clear();
     if(stage==0){
         qDebug() << "nightround #" << rn;
         room->broadcast(QString("Night ")+IntToStr(rn>>1));
@@ -340,8 +310,6 @@ int Game::nightround(int rn){
             if(status->alive[c->username]){
                 askforonevote(c->username,QString("Guard"));
                 tflag=0;
-                //if(tmp.length())
-                    //guarded[tmp]=1;
             }
         if(tflag){
             stage=2;
@@ -368,7 +336,6 @@ int Game::nightround(int rn){
         return 0;
     }
     if(stage==4){
-        //startAwaitsession(30000);
         for(auto c:waitVote)
             set(c->username,0,0);
         QString tmp=status->vote(waitVote);
@@ -458,13 +425,7 @@ void Game::gameend(int res){
 void Game::run(){
     qDebug()<<"Run";
     int res=0;
-    /* for(int round=0;;round++){
-        if(round&1)res=dayround(round);
-        else res=nightround(round);
-        if(res)
-            break;
-    }*/
-    if(stage&1)res=dayround(round);
+    if(stage&1)res=dayround(round);//奇数stage标号代表白天，偶数夜晚
     else res=nightround(round);
     if(!res)return;
     gameend(res);

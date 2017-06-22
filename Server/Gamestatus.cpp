@@ -1,3 +1,10 @@
+/*
+名称：Gamestatus.cpp
+作者：计62 王晓智 2016011257
+时间：2017.5.30
+内容：实现游戏状态类和玩家类
+版权：全部自行完成
+*/
 #include <algorithm>
 #include <cstdlib>
 #include "Gamestatus.h"
@@ -6,9 +13,8 @@ Player::Player(QString _username,QString _role){
     role=_role;
     said=voted=0;
 }
-void Player::handle(QString message){
-    qDebug()<<"Ha "<<message;
-    if(message[4]=='c')said=1; //worldchat已经被过滤
+void Player::handle(QString message){//对这个用户发送的信息进行处理，记录
+    if(message[4]=='c')said=1;
     else if(message[0]=='v'){
         voted=1;
         int s=0,t=message.length();
@@ -16,17 +22,17 @@ void Player::handle(QString message){
             if(message[i]=='@')s=i+1;
             else if((message[i]=='\n'||message[i]==' ')&&s)t=i;
         if(s>=t)lastvote=QString("");
-        else lastvote=message.mid(s,t-s);
+        else lastvote=message.mid(s,t-s);//提取出投票的对象
     }
-    else special=1;//保证不是别的
 }
-//7
-const QString roleToInt[]={QString("villager"),QString("werewolf"),QString("prophet"),QString("witch"),QString("defender"),QString("hunter")};
+//7个角色的数字和角色名的映射
+const QString IntToRole[]={QString("villager"),QString("werewolf"),QString("prophet"),QString("witch"),QString("defender"),QString("hunter")};
 Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game* _game){
     setting=_setting;
     playerid=users;
     game=_game;
     int sum=0;
+    //初始化，随机分配角色
     std::vector<int>_roles;
     for(int i(1);i<6;i++){
         sum+=setting[i];
@@ -37,17 +43,18 @@ Gamestatus::Gamestatus(std::vector<QString> users,std::vector<int> _setting,Game
         _roles.push_back(0);
     srand(time(0));
     std::random_shuffle(_roles.begin(),_roles.end());
+    //将随机得到的角色与用户对应信息记录
     for(int i(0);i<users.size();i++){
         QString c=users[i];
         alive[c]=1;
         cap[c]=used1[c]=used2[c]=0;
-        role[c]=roleToInt[_roles[i]];
+        role[c]=IntToRole[_roles[i]];
         player[c]=new Player(c,role[c]);
         if(!roleplayer.count(role[c]))roleplayer[role[c]]=std::vector<Player*>(1,player[c]);
         else roleplayer[role[c]].push_back(player[c]);
     }
     //for Debug
-    for(auto c:roleToInt)
+    for(auto c:IntToRole)
         for(auto x:roleplayer[c])
             qDebug()<<c<<" "<<x->username;
 }
@@ -70,8 +77,7 @@ QString Gamestatus::showallstatus(){
 bool Gamestatus::canbroad(QString username,QString type,bool f=0){
     return role[username]==type&&(alive[username]||f);
 }
-//QString("prophet"),QString("witch"),QString("defender"),QString("hunter"
-int Gamestatus::judgeend(){//0 没结果 1 好人赢 2 狼人赢
+int Gamestatus::judgeend(){//返回值0 没结果 1 神人赢 2 狼人赢
     bool flag1=1,flag2=1,flag3=1;
     for(auto i:roleplayer[QString("werewolf")])
         if(alive[i->username])

@@ -1,23 +1,26 @@
+/*
+名称：RoomHandler.cpp
+作者：计62 王晓智 2016011257
+时间：2017.5.30
+内容：实现房间类RoomHandler
+版权：全部自行完成
+
+每个函数的功能参见RoomHandler.h
+*/
 #include "RoomHandler.h"
 RoomHandler::RoomHandler(ServerNetworkInterface* _networkInterface){
     this->networkInterface=_networkInterface;
     readycnt=0;
     gamestarted=0;
 }
-bool RoomHandler::canHandle(QString message){
-    //qDebug()<<"Room canHandle";
+bool RoomHandler::canHandle(QString message){//根据客户端传来的包的格式判断能否处理这个包，格式规定见逻辑主文档
     return message[0]=='j'||message[0]=='b'||message[0]=='l'||message[0]=='u'||message[0]=='d'||message[0]=='s'||message[0]=='r';
 }
 EventHandler* RoomHandler::selectHandler(QString message){
-    //qDebug()<<"RoomSelect";
-    if(!gamestarted)
-        qDebug()<<"Yao Shou la";
-    qDebug()<<"Choose Game "<<game;
     return game;
 }
 bool RoomHandler::EnterRoom(QString username){
-    qDebug()<<"Entered";
-    if(!users.size()){
+    if(!users.size()){//如果房间之前没有人，这个用户就是房主
         owner=username;
         sendMessage(username,QString("Owner"));
     }
@@ -27,21 +30,17 @@ bool RoomHandler::EnterRoom(QString username){
         else sendMessage(username,QString("Success"));
     }
     users.push_back(username);
-    ready[username]=0;//这里不考虑username冲突
+    ready[username]=0;
 }
-bool RoomHandler::LeaveRoom(QString username){
-    bool flag=0;
+void RoomHandler::LeaveRoom(QString username){
     for(std::vector<QString>::iterator it=users.begin();it!=users.end();it++)
         if(*it==username){
             users.erase(it);
-            flag=1;
             sendMessage(username,QString("Success"));
             break;
         }
-    if(!flag)
-        std::cerr<<"Yao Shou la!"<<std::endl;
 }
-bool RoomHandler::canStart(){
+bool RoomHandler::canStart(){//房间内人数满足房主设定而且都准备好了
     return readycnt==users.size()&&users.size()==setting[0];
 }
 void RoomHandler::flush(){
@@ -64,7 +63,7 @@ QString RoomHandler::get_status(){
         res+=IntToStr(i)+QString(" ");
     res+=QString("\n");
     for(auto i:users)
-        res+=i+(ready[i]?" 1\n":" 0\n");//注意没有补足该有的行数
+        res+=i+(ready[i]?" 1\n":" 0\n");
     return res;
 }
 void RoomHandler::buildroom(QString str){
@@ -77,31 +76,30 @@ void RoomHandler::buildroom(QString str){
                 tmp=1;
             }
             else
-                tmp*=(c.toLatin1()-'0');//to be
+                tmp*=(c.toLatin1()-'0');
         }
     if(setting.size()<7)
         setting.push_back(tmp);
 }
 void RoomHandler::handle(QString username,QString message){
-    //this->broadcast(QString("room handler handle:Gamestarted"));
     if(message[0]=='j')
         EnterRoom(username);
     else if(message[0]=='l')
         LeaveRoom(username);
     else if(message[0]=='b')
         buildroom(message);
-    else if(message[0]=='u'){
+    else if(message[0]=='u'){//用户举手准备
         ready[username]=1;
         readycnt++;
     }
-    else if(message[0]=='d'){
+    else if(message[0]=='d'){//用户放下手，没准备好
         ready[username]=0;
         readycnt--;
     }
-    else if(message[0]=='r'){
-        this->broadcast(message);
+    else if(message[0]=='r'){//用户发送了房间聊天信息
+        this->broadcast(message);//先向房间内所有用户广播该信息
         if(gamestarted)
-            game->tryHandle(username,message);//To be dicussed
+            game->tryHandle(username,message);//如果游戏已经开始，roomchat涉及到游戏逻辑，交给Game处理
     }
     else if(message[0]=='s')
         startgame();
@@ -110,17 +108,8 @@ void RoomHandler::handle(QString username,QString message){
 }
 void RoomHandler::startgame(){
     gamestarted=1;
-    //this->broadcast(QString("Gamestarted"));
-    game=new Game(users,setting,networkInterface,this);//传递应该有的信息
-    qDebug()<<"Game pointer: "<<game;
+    game=new Game(users,setting,networkInterface,this);
     this->broadcast(QString("Gamestarted"));
     game->run();//TODO
     //delete game;
 }
-
-/*
-void RoomHandler::sendMessage(QString username, QString message)
-{
-    networkInterface->sendMessage(username, message);
-}
-*/

@@ -1,0 +1,16 @@
+INPUT(
+./debug\main.o
+./debug\maindialog.o
+./debug\servernetworkinterface.o
+./debug\eventhandler.o
+./debug\spliter.o
+./debug\clientstatus.o
+./debug\dollarspliter.o
+./debug\ServerCenter.o
+./debug\RoomHandler.o
+./debug\Gamestatus.o
+./debug\Game.o
+./debug\moc_maindialog.o
+./debug\moc_servernetworkinterface.o
+./debug\moc_eventhandler.o
+);

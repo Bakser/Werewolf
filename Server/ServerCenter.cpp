@@ -1,22 +1,23 @@
+/*
+名称：ServerCenter.cpp
+作者：计62 王晓智 2016011257
+时间：2017.5.30
+内容：实现服务中心类
+版权：全部自行完成
+*/
 #include "ServerCenter.h"
 
-// int EventHandler::parseToInt(QString message){
-//     bool flag=0;
-//     int res=1;
-//     for(auto c:message)
-//         if(c==' ')flag=1;
-//         else if(c=='\n')return res;
-//         else if (flag)
-//             res=res*(c-'0');
-//     return res;
-// }
-// ServerCenter::ServerCenter(){
-// }
+QString IntToStr(int x){//数转换成QString
+    return QString::number(x);
+}
+QString nameform(QString x){//将用户ID转换成包中的姓名格式
+    if(x[0]=='@')return x;
+    return QString("@")+x+QString("\n");
+}
 ServerCenter::ServerCenter(ServerNetworkInterface* _networkInterface){
     this->networkInterface=_networkInterface;
 }
-bool ServerCenter::canHandle(QString message){
-    //qDebug()<<"MLGBD"<<message;
+bool ServerCenter::canHandle(QString message){//只能处理加入房间，世界频道聊天两种请求
     if(!message.length())return 1;
     return message[0]=='j'||(message[0]=='w'&&message[2]=='r');
 }
@@ -24,41 +25,17 @@ void ServerCenter::handle(QString username,QString message){
     if(!message.length())return;
     if(message[0]=='j'){
         int roomnumber=parseToInt(message);
-        qDebug()<<roomnumber;
-        if(!this->Rooms.count(roomnumber))
+        //qDebug()<<roomnumber;
+        if(!this->Rooms.count(roomnumber))//如果没有这个房间号对应的房间，新建一个
             this->Rooms[roomnumber]=new RoomHandler(this->networkInterface);//TODO
-        qDebug()<<"To Enter"<<this->Rooms[roomnumber];
-        this->Rooms[roomnumber]->tryHandle(username,message);
+        //qDebug()<<"To Enter"<<this->Rooms[roomnumber];
+        this->Rooms[roomnumber]->tryHandle(username,message);//加入该房间过程交给房间类处理
     }
-    else if(message[0]=='w'&&message[2]=='r'){
+    else if(message[0]=='w'&&message[2]=='r'){//世界喊话，对每个房间都广播一遍
         for(auto i:Rooms)
             i.second->broadcast(message);
     }
-    /*
-    if (message == "join 1"){
-        while(1)
-        sendMessage(username, "Status\nSB werewolf 1 0\nSB 1 0\n");
-       }
-    if (message == "build 1\n1 1 1 1 1 1 1")
-        sendMessage(username, "case1kfghgkjlehfljeskrghkjdghdskg\njhfkrejgheks\njdghdsfkjgs\nhfkgjdsghskdjghdssdkjfhdskgjds\nhgjksdghksjghdskgjhe\nrakgjehgkjdghdzjkgh");
-    if (message == "startgame 1")
-        sendMessage(username, "case2");
-    */
 }
 EventHandler* ServerCenter::selectHandler(QString message){
     return this->Rooms[parseToInt(message)];
 }
-QString IntToStr(int x){
-    return QString::number(x);
-}
-QString nameform(QString x){
-    if(x[0]=='@')return x;
-    return QString("@")+x+QString("\n");
-}
-
-/*
-void ServerCenter::sendMessage(QString username, QString message)
-{
-    networkInterface->sendMessage(username, message);
-}
-*/
