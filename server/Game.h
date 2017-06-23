@@ -39,7 +39,7 @@ class Game: public EventHandler{
         int nightround(int);//夜晚环节
         void solvecap();//处理警长选举
         void solveq();//处理排队发言
-        void solvehunter();//处理猎人崩人
+        bool solvehunter();//处理猎人崩人
         void gameend(int);//游戏结束结算
         void allvote(QString);//要求全员投票，参数为投票前发送的信息
         QString resforallvote();//全体投票结果

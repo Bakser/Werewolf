@@ -70,9 +70,15 @@ void Game::handle(QString username,QString message){
     status->player[username]->handle(message);
     if(judgewait()){//如果满足了等待要求，做对应处理
         sayflag=0;
-        if(hunterflag)solvehunter();
+        if(hunterflag){
+            if(solvehunter())
+                return;
+        }
         if(capflag)solvecap();
-        if(!waitq.empty())solveq();
+        if(!waitq.empty()){
+            solveq();
+            return;
+        }
         else if(waitMessage.size()){
             set(waitMessage[0]->username,0,0);
             waitMessage.clear();
@@ -150,7 +156,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
     }
     return res;
 }
-void Game::solvehunter(){
+bool Game::solvehunter(){
     for(auto c:users)
         if(status->role[c]==QString("hunter")){
             hunterflag=0;
@@ -158,8 +164,10 @@ void Game::solvehunter(){
             if(x.length()){
                 room->broadcast(QString("Hunter\n")+nameform(c)+nameform(x));
                 deadclr(std::vector<QString>(1,x),1);
+                return 1;
             }
         }
+   return 0;
 }
 void Game::solvecap(){
     for(auto c:users)
