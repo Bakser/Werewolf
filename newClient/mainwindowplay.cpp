@@ -61,6 +61,8 @@ MainWindowplay::MainWindowplay(ClientNetworkInterface *_networkInterface, QWidge
 
     death = captain = "";
     captainState = "";
+
+    timer = deadline = NULL;
 }
 
 MainWindowplay::~MainWindowplay()
@@ -77,6 +79,7 @@ bool MainWindowplay::canHandle(QString s)
 void MainWindowplay::handle(QString s)
 {
     qDebug() << "MainWindowplay received " << s;
+    //accessUnable();
     if (s.mid(0, 6) == "Status")
     {
         //flush status
@@ -124,6 +127,7 @@ void MainWindowplay::handle(QString s)
                 //vote for caption
                 c->addRoomChat("Operate : please select a player to be caption.", "purple");
                 captainState = "";
+                clearTimer();
                 timer = new QTimer(this);
                 deadline = new QTimer(this);
                 connect(timer, SIGNAL(timeout()), this, SLOT(endVoteSection()));
@@ -162,6 +166,7 @@ void MainWindowplay::handle(QString s)
                 qDebug() << "ready TalkCaptain";
                 //speech for the caption
                 c->addRoomChat("Operate : please give a speech for becoming captain.", "blue");
+                clearTimer();
                 timer = new QTimer(this);
                 deadline = new QTimer(this);
                 //connect(timer, SIGNAL(timeout()), this, SLOT(accessUnable()));
@@ -179,7 +184,16 @@ void MainWindowplay::handle(QString s)
             {
                 //c->ui->roomSend->setEnabled(true);
                 c->setRoomEnabled(true);
+                clearTimer();
+                timer = new QTimer(this);
+                deadline = new QTimer(this);
+                timer->setInterval(15000);
+                deadline->setInterval(1000);
+                connect(deadline, SIGNAL(timeout()), this, SLOT(flushRemainingTime()));
+                connect(timer, SIGNAL(timeout()), this, SLOT(sayNothing()));
                 c->addRoomChat("System : now you can say something.", "blue");
+                timer->start();
+                deadline->start();
             }
             else
             {
@@ -188,6 +202,7 @@ void MainWindowplay::handle(QString s)
                 //start wolf section
                 c->addWerewolfChat("System : now you can say something.", "blue");
                 c->addWerewolfChat("Operate : Please choose a player to kill.", "purple");
+                clearTimer();
                 timer = new QTimer(this);
                 deadline = new QTimer(this);
                 connect(timer, SIGNAL(timeout()), this, SLOT(endWolfSection()));
@@ -211,6 +226,7 @@ void MainWindowplay::handle(QString s)
         //guard someone at night
         c->addRoomChat("Operate : please select a player to guard this night.", "purple");
         n->setGuard();
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(endGuardSection()));
@@ -230,6 +246,7 @@ void MainWindowplay::handle(QString s)
         {
             //poison session
             c->addRoomChat("Operate : please select a player to sacrifice", "purple");
+            clearTimer();
             timer = new QTimer(this);
             deadline = new QTimer(this);
             connect(timer, SIGNAL(timeout()), this, SLOT(endPoisonSection()));
@@ -248,6 +265,7 @@ void MainWindowplay::handle(QString s)
             {
             death = saver[1].mid(1, saver[1].length() - 1);
             c->addRoomChat("Operate : Do you want to save player " + death + "?", "purple");
+            clearTimer();
             timer = new QTimer(this);
             deadline = new QTimer(this);
             connect(timer, SIGNAL(timeout()), this, SLOT(endSaveSection()));
@@ -269,6 +287,7 @@ void MainWindowplay::handle(QString s)
     {
         n->setFore();
         c->addRoomChat("Operate : please select a player to check.", "purple");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(endProphetSection()));
@@ -325,6 +344,7 @@ void MainWindowplay::handle(QString s)
     if (s.mid(0, 5) == "Order")
     {
         c->addRoomChat("Operate : Do you want players to speak in clockwise order?", "purple");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         timer->setInterval(10000);
@@ -340,9 +360,11 @@ void MainWindowplay::handle(QString s)
     if (s.mid(0, 7) == "Tellsth")
     {
         c->addRoomChat("Operate : You died, please tell something to survival players.", "purple");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(accessUnable()));
+        //connect(timer, SIGNAL(timeout()), this, SLOT(accessUnable()));
+        connect(timer, SIGNAL(timeout()), this, SLOT(sayNothing()));
         connect(deadline, SIGNAL(timeout()), this, SLOT(flushRemainingTime()));
         timer->setInterval(10000);
         deadline->setInterval(1000);
@@ -366,6 +388,7 @@ void MainWindowplay::handle(QString s)
     if (s.mid(0, 4) == "Vote")
     {
         c->addRoomChat("System : start voting.", "blue");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(endVoteSection()));
@@ -373,20 +396,20 @@ void MainWindowplay::handle(QString s)
         connect(deadline, SIGNAL(timeout()), this, SLOT(flushRemainingTime()));
         timer->setInterval(10000);
         deadline->setInterval(1000);
+        v->setVoteType("Vote");
         timer->start();
         deadline->start();
-        v->setVoteType("Vote");
     }
     if (s.mid(0, 5) == "Carry")
     {
         n->setHunter();
         c->addRoomChat("System : Do you want to carry a player away?", "blue");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         timer->setInterval(10000);
         deadline->setInterval(1000);
         connect(deadline, SIGNAL(timeout()), this, SLOT(flushRemainingTime()));
-        //connect(timer, SIGNAL(timeout())), this, SLOT(endCarrySection()));
         connect(timer, SIGNAL(timeout()), this, SLOT(endCarrySection()));
         connect(v, SIGNAL(voteSuccess(QString)), this, SLOT(endCarrySection(QString)));
         timer->start();
@@ -401,6 +424,7 @@ void MainWindowplay::handle(QString s)
     if (s.mid(0, 4) == "Pass")
     {
         c->addRoomChat("Operate : You died as a captain. Select a player to be the new captain.", "blue");
+        clearTimer();
         timer = new QTimer(this);
         deadline = new QTimer(this);
         timer->setInterval(10000);
@@ -448,6 +472,7 @@ EventHandler* MainWindowplay::selectHandler(QString)
 
 void MainWindowplay::endGuardSection(QString guardChoose)
 {
+    qDebug() << "endGuardSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" + guardChoose);
     Globals::lastDefend = guardChoose;
@@ -455,18 +480,21 @@ void MainWindowplay::endGuardSection(QString guardChoose)
 
 void MainWindowplay::endPoisonSection(QString poisonChoose)
 {
+    qDebug() << "endPoisonSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" + poisonChoose);
 }
 
 void MainWindowplay::endWolfSection(QString wolfChoose)
 {
+    qDebug() << "endWolfSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" + wolfChoose);
 }
 
 void MainWindowplay::endSaveSection(bool save)
 {
+    qDebug() << "endSaveSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
                                 (save ? death : ""));
@@ -474,18 +502,42 @@ void MainWindowplay::endSaveSection(bool save)
 
 void MainWindowplay::endProphetSection(QString prophetChoose)
 {
+    qDebug() << "endProphetSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
                                 prophetChoose);
 }
 
+
+void MainWindowplay::clearTimer()
+{
+    qDebug() << "go into clearTimer";
+    label->setText("");
+    qDebug() << "timer begin...";
+    if (timer != NULL)
+    {
+        qDebug() << "timer not null";
+        timer->stop();
+        delete timer;
+        timer = NULL;
+    }
+    qDebug() << "timer end...";
+    qDebug() << "deadline begin...";
+    if (deadline != NULL)
+    {
+        qDebug() << "deadline not null";
+        deadline->stop();
+        delete deadline;
+        deadline = NULL;
+    }
+    qDebug() << "deadline end...";
+    qDebug() << "go out of clearTimer";
+}
+
 void MainWindowplay::accessUnable()
 {
-    label->setText("");
-    timer->stop();
-    delete timer;
-    deadline->stop();
-    delete deadline;
+    qDebug() << "go into accessUnable()...";
+    clearTimer();
     /*
     v->ui->pushButton->setEnabled(false);
     v->ui->yes->setEnabled(false);
@@ -497,18 +549,21 @@ void MainWindowplay::accessUnable()
     v->setYesNoEnabled(false);
     c->setRoomEnabled(false);
     c->setWerewolfEnabled(false);
+    qDebug() << "go out of accessUnable()...";
 }
 
 void MainWindowplay::endVoteSection(QString voteChoose)
 {
     qDebug() << "end vote section : " << voteChoose;
     accessUnable();
-    networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
-                                voteChoose);
+    QString addString = "vote " + QString::number(Globals::roomnumber) + "\n@" + voteChoose;
+    qDebug() << addString;
+    networkInterface->addString(addString);
 }
 
 void MainWindowplay::endCarrySection(QString carryChoose)
 {
+    qDebug() << "endCarrySection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
                                 carryChoose);
@@ -516,6 +571,7 @@ void MainWindowplay::endCarrySection(QString carryChoose)
 
 void MainWindowplay::endOrderSection(bool clockwise)
 {
+    qDebug() << "endOrderSection";
     accessUnable();
     //networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
@@ -525,6 +581,7 @@ void MainWindowplay::endOrderSection(bool clockwise)
 
 void MainWindowplay::endPassSection(QString passChoose)
 {
+    qDebug() << "endPassSection";
     accessUnable();
     networkInterface->addString("vote " + QString::number(Globals::roomnumber) + "\n@" +
                                 passChoose);
@@ -537,7 +594,14 @@ void MainWindowplay::flushRemainingTime()
 
 void MainWindowplay::MessageNotSended()
 {
+    qDebug() << "MessageNotSender";
     accessUnable();
     networkInterface->addString("roomchat " + QString::number(Globals::roomnumber) + "\n@" + Globals::meid);
 }
 
+void MainWindowplay::sayNothing()
+{
+    qDebug() << "sayNothing";
+    accessUnable();
+    networkInterface->addString("roomchat " + QString::number(Globals::roomnumber) + "\n@" + Globals::meid);
+}

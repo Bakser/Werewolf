@@ -49,6 +49,8 @@ private slots:
     void MessageNotSended();
     void accessUnable();
     void flushRemainingTime();
+    void sayNothing();
+    void clearTimer();
 };
 
 #endif // MAINWINDOWPLAY_H
