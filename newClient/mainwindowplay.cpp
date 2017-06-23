@@ -98,6 +98,10 @@ void MainWindowplay::handle(QString s)
             connect(t, SIGNAL(onclose()), this, SLOT(show()));
         }
     }
+    if (s == "Captaindie")
+    {
+        c->addRoomChat("System: Captain died.", "blue");
+    }
     if (s.mid(0, 5) == "Night")
     {
         c->addRoomChat("System: " + s + " is coming...", "blue");
