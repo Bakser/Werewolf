@@ -7,7 +7,7 @@
 */
 #ifndef RoomHandler_H
 #define RoomHandler_H
-#include "ServerNetworkInterface.h"
+#include "servernetworkinterface.h"
 #include "eventhandler.h"
 #include "Game.h"
 #include "Gamestatus.h"

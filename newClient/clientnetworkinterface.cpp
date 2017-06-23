@@ -37,7 +37,7 @@ void ClientNetworkInterface::addString(QString s)
 void ClientNetworkInterface::startLogin(QString userName)
 {
     qDebug() << "User " + userName + " start login...";
-    tcpSocket->connectToHost("127.0.0.1", 6666);
+    tcpSocket->connectToHost("101.6.163.75", 6666);
     //addString("login " + userName);
     startSend("login " + userName);
 }
