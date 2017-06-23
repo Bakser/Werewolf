@@ -20,7 +20,7 @@ Game::Game(std::vector<QString> _users,std::vector<int> setting,ServerNetworkInt
     users=_users;
     status=new Gamestatus(_users,setting,this);
     stage=round=0;
-    hunterflag=capflag=sayflag=voteflag=0;
+    hunterflag=capflag=sayflag=voteflag=dclrflag=0;
 }
 
 bool Game::canHandle(QString message){//责任链到此为止
@@ -74,7 +74,7 @@ void Game::handle(QString username,QString message){
         if(capflag)solvecap();
         if(!waitq.empty())solveq();
         if(!capflag&&!hunterflag&&waitq.empty()){
-            if(!voteflag)stage+=2;
+            if(!voteflag&&!dclrflag)stage+=2;
             run();
         }
     }
@@ -104,7 +104,10 @@ void Game::closeall(){
         set(c,0,0);
 }
 int Game::deadclr(std::vector<QString> buffer,bool flag=0){
-    if(buffer.empty())return 0;
+    if(buffer.empty()){
+        dclrflag=0;
+        return 0;
+    }
     QString tmp=QString("Die\n");
     for(auto c:buffer){
         tmp+=nameform(c);
@@ -116,7 +119,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
         if(status->role[c]==QString("hunter")&&!poied[c]){
             sendMessage(c,"Carry");
             set(c,1,0);
-            hunterflag=1;
+            hunterflag=dclrflag=1;
             waitVote.push_back(status->player[c]);
         }
     for(auto c:buffer)
@@ -124,7 +127,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
             room->broadcast("Captaindie");
             sendMessage(c,"Pass");
             set(c,1,0);
-            capflag=1;
+            capflag=dclrflag=1;
             waitVote.push_back(status->player[c]);
         }
     //死亡结算中如果出现猎人崩人，警徽移交等事件，进入等待
@@ -137,7 +140,7 @@ int Game::deadclr(std::vector<QString> buffer,bool flag=0){
         for(auto c:buffer){
             sendMessage(c,"Tellsth");
             set(c,((status->role[c]==QString("hunter")&&!poied[c])||status->cap[c]),1,"Room");
-            sayflag=1;
+            sayflag=dclrflag=1;
             waitMessage.push_back(status->player[c]);
         }
     }
@@ -199,6 +202,7 @@ int Game::dayround(int rn){
         int tmp=deadclr(deadbuffer,rn==1);
         deadbuffer.clear();
         if(tmp)return tmp;
+        if(dclrflag)return 0;
         if(status->setting[6]){
             if(rn==1){
                 room->broadcast(QString("TalkCaptain"));
@@ -259,8 +263,7 @@ int Game::dayround(int rn){
         while(!waitq.empty())waitq.pop();
         for(int i((s+order+n)%n);i!=s;i=(i+order+n)%n)
             waitq.push(users[i]);
-        if(cap.length()) waitq.push(cap);
-        else waitq.push(users[0]);
+        waitq.push(users[s]);
         solveq();
         return 0;
     }
@@ -289,6 +292,8 @@ int Game::dayround(int rn){
     if(stage==9){
         label2:
         int tmp=deadclr(deadbuffer,1);
+        deadbuffer.clear();
+        if(dclrflag)return 0;
         if(tmp)return tmp;
         stage=0;round++;
         tmp=nightround(round);

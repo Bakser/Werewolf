@@ -23,7 +23,7 @@ class Game: public EventHandler{
         std::map<QString,bool>poied;//被女巫下毒的玩家
         int stage,round;//当前的阶段/轮数
         std::queue<QString> waitq;//等待发言的玩家队列
-        bool hunterflag,capflag,sayflag,voteflag;//当前是否在等待猎人带走人/警长选举/说话/投票的标记
+        bool hunterflag,capflag,sayflag,voteflag,dclrflag;//当前是否在等待猎人带走人/警长选举/说话/投票/遗言的标记
     private:
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);
