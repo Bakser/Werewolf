@@ -7,6 +7,7 @@
 #include "waitroom.h"
 #include "newroom.h"
 
+//等待房间的界面设计
 namespace Ui {
 class joinroom;
 }
@@ -20,18 +21,16 @@ public:
     ~joinroom();
 
 private slots:
-    void on_pushButton_clicked();
-    void success();
-    void full();
-    void owner();
-
-    //void on_lineEdit_editingFinished();
+    void on_pushButton_clicked();//点击按钮
+    void success();//成功加入房间
+    void full();//房间已经满了
+    void owner();//第一个加入房间，成为房主
 
 private:
     Ui::joinroom *ui;
     void handle(QString s);
     bool canHandle(QString s);
-    EventHandler* selectHandler(QString s);
+    EventHandler* selectHandler(QString s);//实现责任链模式的纯虚函数
     waitroom *dr;
 };
 

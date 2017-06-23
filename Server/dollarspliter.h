@@ -5,6 +5,7 @@
 #include <vector>
 #include "spliter.h"
 
+//按照美元符号进行分割的字符串分割器
 class DollarSpliter : public Spliter
 {
 public:

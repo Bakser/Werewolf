@@ -7,6 +7,7 @@
 #include "eventhandler.h"
 #include "joinroom.h"
 
+//主游戏界面设计
 namespace Ui {
 class MainWindow;
 }

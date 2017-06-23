@@ -12,30 +12,20 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
-/*
-QString IntToStr(int x){
-    return QString::number(x);
-}
-QString nameform(QString x){
-    if(x[0]=='@')return x;
-    return QString("@")+x+QString("\n");
-}
-*/
 QString IntToStr(int);
 QString nameform(QString x);
 class Game;
 class RoomHandler;
+//服务器数据交换中心
 class ServerCenter:public EventHandler{
     protected:
-        std::map<int,RoomHandler*> Rooms;
+        std::map<int,RoomHandler*> Rooms;             //保存RoomHandler的map
     private:
         virtual bool canHandle(QString);
         virtual EventHandler* selectHandler(QString);
         virtual void handle(QString,QString);
-        //ServerNetworkInterface *networkInterface;
     public:
         ServerCenter()=default;
         ServerCenter(ServerNetworkInterface*);
-        //void sendMessage(QString, QString);
 };
 #endif

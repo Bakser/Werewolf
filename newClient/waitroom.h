@@ -7,6 +7,7 @@
 #include "mainwindowplay.h"
 #include <QLabel>
 
+//等待游戏开始房间界面设计
 namespace Ui {
 class waitroom;
 }

@@ -6,6 +6,7 @@
 
 class ClientNetworkInterface;
 
+//典型的责任树节点设计,详情见文档
 class EventHandler
 {
 public:

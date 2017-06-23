@@ -6,6 +6,7 @@
 #include "clientnetworkinterface.h"
 #include <QCloseEvent>
 
+//游戏参数设置界面设计
 namespace Ui {
 class newroom;
 }
@@ -23,7 +24,7 @@ public:
     bool bhunter;
     bool bforesee;
     bool bguard;
-    bool bpolice;
+    bool bpolice;//各种类型角色数目
 
 
 private slots:
@@ -42,7 +43,7 @@ private slots:
 
     void on_checkBox_3_clicked();
 
-    void on_checkBox_5_clicked();
+    void on_checkBox_5_clicked();//控制调整各种角色数目
 
 private:
     Ui::newroom *ui;

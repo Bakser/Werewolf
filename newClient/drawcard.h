@@ -7,6 +7,7 @@ namespace Ui {
 class drawcard;
 }
 
+//抽牌界面设计
 class drawcard : public QDialog
 {
     Q_OBJECT

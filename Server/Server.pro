@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     servernetworkinterface.cpp \
     eventhandler.cpp \
     spliter.cpp \
-    clientstatus.cpp \
     dollarspliter.cpp \
     ServerCenter.cpp \
     RoomHandler.cpp \
@@ -29,7 +28,6 @@ HEADERS  += maindialog.h \
     servernetworkinterface.h \
     eventhandler.h \
     spliter.h \
-    clientstatus.h \
     dollarspliter.h \
     RoomHandler.h \
     ServerCenter.h \
