@@ -73,6 +73,10 @@ void Game::handle(QString username,QString message){
         if(hunterflag)solvehunter();
         if(capflag)solvecap();
         if(!waitq.empty())solveq();
+        else if(waitMessage.size()){
+            set(waitMessage[0]->username,0,0);
+            waitMessage.clear();
+        }
         if(!capflag&&!hunterflag&&waitq.empty()){
             if(!voteflag&&!dclrflag)stage+=2;
             run();
