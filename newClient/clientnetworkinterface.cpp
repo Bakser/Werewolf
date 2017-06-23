@@ -25,20 +25,14 @@ ClientNetworkInterface::~ClientNetworkInterface()
 
 void ClientNetworkInterface::addString(QString s)
 {
-    /*
-    if (sendString == "")
-        sendString = s;
-    else
-        sendString += "$" + s;
-    */
     startSend(s);
 }
 
 void ClientNetworkInterface::startLogin(QString userName)
 {
     qDebug() << "User " + userName + " start login...";
-    tcpSocket->connectToHost("101.6.163.75", 6666);
-    //addString("login " + userName);
+    //tcpSocket->connectToHost("101.6.163.75", 6666);
+    tcpSocket->connectToHost("127.0.0.1", 6666);
     startSend("login " + userName);
 }
 

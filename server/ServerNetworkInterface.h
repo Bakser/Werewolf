@@ -7,7 +7,6 @@
 #include <QTcpSocket>
 #include <QTcpServer>
 #include <spliter.h>
-#include <clientstatus.h>
 #include <dollarspliter.h>
 
 class EventHandler;

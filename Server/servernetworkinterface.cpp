@@ -8,14 +8,12 @@ ServerNetworkInterface::ServerNetworkInterface(EventHandler* handler, QObject* p
 {
     mainHandler = handler;
     tcpServer = new QTcpServer(this);
-    //tcpServer->listen(QHostAddress::LocalHost, 6666);
-    tcpServer->listen(QHostAddress("101.6.163.75"), 6666);
-    //QString ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-    /*
+    tcpServer->listen(QHostAddress::LocalHost, 6666);
+    //tcpServer->listen(QHostAddress("101.6.163.75"), 6666);
+    QString ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
     qDebug() << tr("The server is running on\n\nIP: %1\nport: %2\n\n"
-                   "Run the Fortune Client example now.")
+                   "Run the Client now.")
                 .arg(ipAddress).arg(tcpServer->serverPort());
-    */
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(handleConnection()));
     spliter = new DollarSpliter();
 }
